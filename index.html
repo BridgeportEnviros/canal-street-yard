@@ -1,38 +1,38 @@
 <title>Canal Street Yard Proximity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap">
 <style>
 :root{
   color-scheme:light;
-  --paper:#f2f3ef; --paper-2:#e9ebe5; --panel:#fbfbf9; --line:#d3d6cd; --line-2:#b9bdb2;
-  --ink:#141b1a; --ink-2:#4b5551; --ink-3:#7a837e;
-  --accent:#c2521d; --accent-2:#e5b79f; --accent-soft:rgba(194,82,29,.12);
-  --city:#4a6b8a; --city-soft:#c9d6e2; --exist:#6b8f5e;
-  --water:#b4cbda; --park:#d2dfc7; --road:#ffffff; --road-edge:#cfd3ca; --major:#f7f4ea; --rail:#5a615d; --yard-other:#d9dbd3; --site:#2b2f2d;
+  --paper:#f4f5f6; --paper-2:#e6e9eb; --panel:#ffffff; --line:#d5dadd; --line-2:#b4bcc1;
+  --ink:#27251f; --ink-2:#4f5257; --ink-3:#7c8287;
+  --accent:#27251f; --accent-2:#c4ced4; --accent-soft:rgba(39,37,31,.10);
+  --city:#5b7086; --city-soft:#c4ced4; --exist:#98a4ab;
+  --water:#c4ced4; --park:#dfe4e0; --road:#ffffff; --road-edge:#d5dadd; --major:#f7f7f5; --rail:#5f6368; --yard-other:#e1e4e6; --site:#27251f;
   --focus:#1c5cab;
-  --radius:6px;
-  --font-display:"Archivo","Helvetica Neue",Arial,sans-serif;
-  --font-body:"IBM Plex Sans","Segoe UI",Roboto,sans-serif;
-  --font-mono:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --radius:3px;
+  --font-display:"Barlow Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --font-body:"Barlow","Segoe UI",Roboto,sans-serif;
+  --font-mono:"Barlow Semi Condensed","Barlow","Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --paper:#15181a; --paper-2:#1c2022; --panel:#1f2426; --line:#333a3d; --line-2:#485155;
-    --ink:#eef0ec; --ink-2:#b3bab5; --ink-3:#7f8884;
-    --accent:#e8763f; --accent-2:#7a3e22; --accent-soft:rgba(232,118,63,.16);
-    --city:#8fb0cf; --city-soft:#2c3c4b; --exist:#8fb586;
-    --water:#22323d; --park:#22301f; --road:#2c3234; --road-edge:#1a1e20; --major:#3a3e3b; --rail:#9aa39e; --yard-other:#262b2c; --site:#e3e6e1;
+    --paper:#111213; --paper-2:#1a1c1e; --panel:#1f2224; --line:#33373a; --line-2:#4a5054;
+    --ink:#f2f3f4; --ink-2:#c4ced4; --ink-3:#8b9399;
+    --accent:#f2f3f4; --accent-2:#4a5054; --accent-soft:rgba(242,243,244,.12);
+    --city:#8fa9c2; --city-soft:#2c3640; --exist:#6f7b83;
+    --water:#243038; --park:#212925; --road:#2a2e31; --road-edge:#17191b; --major:#3a3f43; --rail:#a2a9ae; --yard-other:#25292c; --site:#f2f3f4;
     --focus:#7fb0ff;
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --paper:#15181a; --paper-2:#1c2022; --panel:#1f2426; --line:#333a3d; --line-2:#485155;
-  --ink:#eef0ec; --ink-2:#b3bab5; --ink-3:#7f8884;
-  --accent:#e8763f; --accent-2:#7a3e22; --accent-soft:rgba(232,118,63,.16);
-  --city:#8fb0cf; --city-soft:#2c3c4b; --exist:#8fb586;
-  --water:#22323d; --park:#22301f; --road:#2c3234; --road-edge:#1a1e20; --major:#3a3e3b; --rail:#9aa39e; --yard-other:#262b2c; --site:#e3e6e1;
+  --paper:#111213; --paper-2:#1a1c1e; --panel:#1f2224; --line:#33373a; --line-2:#4a5054;
+  --ink:#f2f3f4; --ink-2:#c4ced4; --ink-3:#8b9399;
+  --accent:#f2f3f4; --accent-2:#4a5054; --accent-soft:rgba(242,243,244,.12);
+  --city:#8fa9c2; --city-soft:#2c3640; --exist:#6f7b83;
+  --water:#243038; --park:#212925; --road:#2a2e31; --road-edge:#17191b; --major:#3a3f43; --rail:#a2a9ae; --yard-other:#25292c; --site:#f2f3f4;
   --focus:#7fb0ff;
 }
 *{box-sizing:border-box}
@@ -41,15 +41,17 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-bo
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 button,input,select{font:inherit;color:inherit}
 h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0}
-a{color:var(--accent)}
-.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
-.eyebrow{font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+a{color:var(--ink);text-decoration-color:var(--line-2)}
+.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:500}
+.eyebrow{font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
 
 /* header */
-header{max-width:1320px;margin:0 auto;padding-block:26px 18px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:18px 32px;align-items:end}
-header h1{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.01em;line-height:1.05}
+header{max-width:1320px;margin:0 auto;padding-block:24px 20px;border-bottom:4px solid var(--ink);display:grid;grid-template-columns:1fr auto;gap:18px 32px;align-items:end;position:relative}
+header::before{content:"";position:absolute;inset:0 0 0 0;background:repeating-linear-gradient(90deg,transparent 0 22px,color-mix(in srgb,var(--ink) 7%,transparent) 22px 23px);pointer-events:none;mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 85%)}
+header>*{position:relative}
+header h1{font-size:clamp(34px,4.6vw,58px);font-weight:800;letter-spacing:.005em;line-height:.98;text-transform:uppercase}
 header .sub{max-width:62ch;color:var(--ink-2);margin-top:8px}
-header .vint{font-size:12.5px;color:var(--ink-3);text-align:right;line-height:1.55}
+header .vint{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);text-align:right;line-height:1.55}
 @media (max-width:760px){header{grid-template-columns:1fr}header .vint{text-align:left}}
 
 /* workspace */
@@ -75,33 +77,33 @@ header .vint{font-size:12.5px;color:var(--ink-3);text-align:right;line-height:1.
 /* controls panel */
 .panel{display:grid;gap:18px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
-.card h2{font-size:15px;font-weight:600;margin-bottom:10px}
+.card h2{font-size:17px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
 .dist{display:flex;align-items:baseline;gap:10px;margin:2px 0 6px}
-.dist .big{font-family:var(--font-display);font-weight:800;font-size:40px;line-height:1;letter-spacing:-.02em;color:var(--accent)}
+.dist .big{font-family:var(--font-display);font-weight:800;font-size:48px;line-height:1;letter-spacing:0;color:var(--ink)}
 .dist .unit{color:var(--ink-2)}
-input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 6px}
+input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 .presets{display:flex;flex-wrap:wrap;gap:6px}
-.presets button,.seg button{border:1px solid var(--line-2);background:transparent;border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;color:var(--ink-2)}
-.presets button[aria-pressed=true],.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.presets button,.seg button{border:1px solid var(--line-2);background:transparent;border-radius:2px;padding:4px 11px;font-size:13px;cursor:pointer;color:var(--ink-2)}
+.presets button[aria-pressed=true],.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
 .seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .seg button{border-radius:4px}
 .hint{font-size:12.5px;color:var(--ink-3);margin-top:8px;line-height:1.45}
 .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.tile{padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper)}
-.tile .v{font-family:var(--font-display);font-weight:800;font-size:26px;letter-spacing:-.01em;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile{padding:12px 14px;border:1px solid var(--line);border-top:3px solid var(--ink);border-radius:var(--radius);background:var(--panel)}
+.tile .v{font-family:var(--font-display);font-weight:800;font-size:32px;letter-spacing:0;line-height:1.05;font-variant-numeric:tabular-nums}
 .tile .l{font-size:12px;color:var(--ink-2);margin-top:2px}
 .tile .c{font-size:11.5px;color:var(--ink-3);margin-top:4px}
 .tile .c b{color:var(--ink-2);font-weight:500}
 
 /* comparison */
 .section{max-width:1320px;margin:34px auto 0}
-.section>h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.section>h2{font-size:28px;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
 .section>p.lede{color:var(--ink-2);max-width:70ch;margin:6px 0 0}
 .grp{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-.grp h3{font-size:14px;font-weight:600;padding:12px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-.grp h3 small{font-weight:400;color:var(--ink-3);font-size:12px;font-family:var(--font-body)}
+.grp h3{font-size:17px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:12px 18px;background:var(--ink);color:var(--paper);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.grp h3 small{font-weight:400;color:var(--accent-2);font-size:12px;font-family:var(--font-body);text-transform:none;letter-spacing:0}
 .cmp{width:100%;border-collapse:collapse}
-.cmp th{font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 18px;border-bottom:1px solid var(--line)}
+.cmp th{font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 18px;border-bottom:1px solid var(--line)}
 .cmp th.r,.cmp td.r{text-align:right}
 .cmp td{padding:9px 18px;border-bottom:1px solid var(--line);vertical-align:middle}
 .cmp tr:last-child td{border-bottom:none}
@@ -120,7 +122,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 6px}
 .cmp th.sortable:hover{color:var(--ink)}
 .cmp th.sortable .arr{display:inline-block;width:1em;color:var(--accent)}
 .chip{display:inline-block;font-family:var(--font-mono);font-size:12px;padding:2px 7px;border-radius:3px;border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap}
-.chip.up{border-color:var(--accent);color:var(--accent)}
+.chip.up{border-color:var(--ink);color:var(--ink);background:var(--accent-soft);font-weight:600}
 .chip.dn{border-color:var(--city);color:var(--city)}
 .key{display:flex;gap:16px;font-size:12.5px;color:var(--ink-2);margin-top:12px;flex-wrap:wrap}
 .key i{display:inline-block;width:18px;height:7px;border-radius:2px;vertical-align:middle;margin-right:6px}
@@ -129,14 +131,14 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 6px}
 /* collapsible */
 .fold summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
 .fold summary::-webkit-details-marker{display:none}
-.fold summary h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.fold summary h2{font-size:28px;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
 .fold summary .cnt{font-family:var(--font-body);font-weight:400;font-size:14px;color:var(--ink-3);margin-left:8px}
 .fold .chev{width:10px;height:10px;border-right:2px solid var(--ink-2);border-bottom:2px solid var(--ink-2);transform:rotate(45deg);transition:transform .2s;margin-right:6px;flex:none}
 .fold[open] .chev{transform:rotate(-135deg)}
 .fold summary:hover h2{color:var(--accent)}
 /* tract list */
 .tl{width:100%;border-collapse:collapse;font-size:13.5px}
-.tl th{font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 14px;border-bottom:1px solid var(--line)}
+.tl th{font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 14px;border-bottom:1px solid var(--line)}
 .tl td{padding:7px 14px;border-bottom:1px solid var(--line)}
 .tl th.r,.tl td.r{text-align:right}
 .tl tr:last-child td{border-bottom:none}
@@ -161,7 +163,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 6px}
   <div>
     <div class="eyebrow">Bridgeport · Armour Square · Chinatown &nbsp;—&nbsp; Chicago, Illinois</div>
     <h1>Who lives next to the Canal Street Yard?</h1>
-    <p class="sub">Set a distance from the Union Pacific yard proposed as Amtrak's relocated maintenance facility. The tool selects every census tract within that distance, builds one demographic and health profile of the people living there, and compares it with the City of Chicago as a whole.</p>
+    <p class="sub">Set a distance from the Union Pacific yard proposed as Amtrak's relocated maintenance facility. The tool selects every census tract within that distance, builds one demographic and health profile of the people living there, and compares it with the City of Chicago as a whole and with the neighbours of Amtrak's existing 14th Street maintenance yard at the same distance.</p>
   </div>
   <div class="vint" id="vintage"></div>
 </header>
@@ -176,8 +178,8 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 6px}
     </div>
     <div class="legend">
       <div class="row"><span class="sw" style="background:var(--site)"></span>UP Canal Street Yard (site)</div>
-      <div class="row"><span class="sw" style="background:var(--accent);opacity:.35"></span>Distance band</div>
-      <div class="row"><span class="sw" style="background:var(--accent);opacity:.55;border:1px solid var(--accent)"></span>Tract in cohort (darker = higher weight)</div>
+      <div class="row"><span class="sw" style="background:var(--accent);opacity:.18"></span>Distance band</div>
+      <div class="row"><span class="sw" style="background:var(--accent);opacity:.3;border:1px solid var(--accent)"></span>Tract in cohort (darker = higher weight)</div>
       <div class="row"><span class="sw" style="background:var(--yard-other);border:1px solid var(--line-2)"></span>Other rail yards</div>
     </div>
     <div class="scalebar" id="scalebar"><span id="scaletxt">1,000 ft</span><i id="scalebarline"></i></div>
@@ -454,7 +456,7 @@ const el=(n,attrs,parent)=>{const e=document.createElementNS(svgNS,n); for(const
 const path=(coords)=>coords.map((p,i)=>(i?'L':'M')+p[0]+' '+(-p[1])).join('');
 const ringPath=(rings)=>rings.map(r=>path(r)+'Z').join('');
 const view={x:-6000,y:-11000,w:12000,h:22000};
-const gBase=el('g',{id:'base'}), gTractFill=el('g',{}), gRoads=el('g',{'pointer-events':'none'}), gBuffer=el('g',{opacity:.34,'pointer-events':'none'}), gSite=el('g',{'pointer-events':'none'}), gTractLine=el('g',{fill:'none','pointer-events':'none'}), gLabels=el('g',{'font-family':'IBM Plex Sans, sans-serif','pointer-events':'none'});
+const gBase=el('g',{id:'base'}), gTractFill=el('g',{}), gRoads=el('g',{'pointer-events':'none'}), gBuffer=el('g',{opacity:.16,'pointer-events':'none'}), gSite=el('g',{'pointer-events':'none'}), gTractLine=el('g',{fill:'none','pointer-events':'none'}), gLabels=el('g',{'font-family':'Barlow, sans-serif','pointer-events':'none'});
 // defs: hatch for the site
 const defs=el('defs',{});
 const pat=el('pattern',{id:'hatch',width:'60',height:'60',patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);
@@ -495,7 +497,7 @@ function midInfo(c){ const half=segLen(c)/2; let acc=0; for(let i=1;i<c.length;i
 Object.values(byName).sort((a,b)=>b.len-a.len).slice(0,20).forEach(({f})=>{ const m=midInfo(f.c); if(!m) return; const t=el('text',{x:m.x,y:-m.y,'data-px':10.5,'font-size':95,fill:'var(--ink-2)','text-anchor':'middle',transform:`rotate(${m.ang.toFixed(1)} ${m.x} ${-m.y})`,dy:'-0.35em','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22,'stroke-linejoin':'round'},gLabels); t.textContent=f.n; });
 for(const f of B.parks) if(f.n && f.k==='stadium'){ const c=centroid(f.c); const t=el('text',{x:c[0],y:-c[1],'data-px':12,'font-size':105,'font-weight':600,fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22},gLabels); t.textContent=f.n; }
 for(const f of B.water) if(f.n && !f.poly && segLen(f.c)>2500){ const m=midInfo(f.c); if(m){ const t=el('text',{x:m.x,y:-m.y,'data-px':11,'font-size':95,'font-style':'italic',fill:'var(--city)','text-anchor':'middle',transform:`rotate(${m.ang.toFixed(1)} ${m.x} ${-m.y})`,dy:'-0.3em','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':20},gLabels); t.textContent=f.n; } }
-const siteC=centroid(D.yard); { const t=el('text',{x:siteC[0]+260,y:-siteC[1],'data-px':13,'font-size':115,'font-weight':600,'font-family':'Archivo, sans-serif',fill:'var(--ink)','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':26},gLabels); t.textContent='UP Canal Street Yard'; }
+const siteC=centroid(D.yard); { const t=el('text',{x:siteC[0]+260,y:-siteC[1],'data-px':13,'font-size':115,'font-weight':600,'font-family':'Barlow Condensed, sans-serif',fill:'var(--ink)','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':26},gLabels); t.textContent='UP Canal Street Yard'; }
 const tractLabelG=el('g',{},gLabels);
 function centroid(c){ let a=0,x=0,y=0; for(let i=0;i<c.length;i++){ const j=(i+1)%c.length; const f=c[i][0]*c[j][1]-c[j][0]*c[i][1]; a+=f; x+=(c[i][0]+c[j][0])*f; y+=(c[i][1]+c[j][1])*f; } a*=.5; if(Math.abs(a)<1) return c[0]; return [x/(6*a),y/(6*a)]; }
 
@@ -524,9 +526,9 @@ window.addEventListener('resize',()=>{applyView();});
 function renderMap(agg){
   bufferPath.setAttribute('stroke-width', state.ft*2);
   const inCohort=new Map(agg.rows.map(r=>[r.t.geoid,r.w]));
-  for(const t of D.tracts){ const e=tractEls[t.geoid]; if(!e) continue; const w=inCohort.get(t.geoid)||0; e.fill.setAttribute('fill-opacity', w? (0.08+0.28*w).toFixed(2):0); e.line.setAttribute('stroke', w?'var(--accent)':'var(--ink-3)'); e.line.setAttribute('stroke-width', w?1.4:.7); e.line.setAttribute('stroke-opacity', w?.95:.5); }
+  for(const t of D.tracts){ const e=tractEls[t.geoid]; if(!e) continue; const w=inCohort.get(t.geoid)||0; e.fill.setAttribute('fill-opacity', w? (0.06+0.22*w).toFixed(2):0); e.line.setAttribute('stroke', w?'var(--accent)':'var(--ink-3)'); e.line.setAttribute('stroke-width', w?1.4:.7); e.line.setAttribute('stroke-opacity', w?.95:.5); }
   tractLabelG.innerHTML='';
-  for(const r of agg.rows){ if(!r.t.polys) continue; const c=centroid(r.t.polys[0][0]); const t=el('text',{x:c[0],y:-c[1],'data-px':11,'font-size':88,'font-family':'IBM Plex Mono, monospace',fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':16,opacity:.9},tractLabelG); t.textContent=r.t.name.replace('Census Tract ',''); }
+  for(const r of agg.rows){ if(!r.t.polys) continue; const c=centroid(r.t.polys[0][0]); const t=el('text',{x:c[0],y:-c[1],'data-px':11,'font-size':88,'font-family':'Barlow Semi Condensed, sans-serif',fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':16,opacity:.9},tractLabelG); t.textContent=r.t.name.replace('Census Tract ',''); }
   scaleLabels();
 }
 // tooltip
