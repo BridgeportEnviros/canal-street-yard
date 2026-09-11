@@ -1,0 +1,563 @@
+<title>Canal Street Yard Proximity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --paper:#f2f3ef; --paper-2:#e9ebe5; --panel:#fbfbf9; --line:#d3d6cd; --line-2:#b9bdb2;
+  --ink:#141b1a; --ink-2:#4b5551; --ink-3:#7a837e;
+  --accent:#c2521d; --accent-2:#e5b79f; --accent-soft:rgba(194,82,29,.12);
+  --city:#4a6b8a; --city-soft:#c9d6e2; --exist:#6b8f5e;
+  --water:#b4cbda; --park:#d2dfc7; --road:#ffffff; --road-edge:#cfd3ca; --major:#f7f4ea; --rail:#5a615d; --yard-other:#d9dbd3; --site:#2b2f2d;
+  --focus:#1c5cab;
+  --radius:6px;
+  --font-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-body:"IBM Plex Sans","Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#15181a; --paper-2:#1c2022; --panel:#1f2426; --line:#333a3d; --line-2:#485155;
+    --ink:#eef0ec; --ink-2:#b3bab5; --ink-3:#7f8884;
+    --accent:#e8763f; --accent-2:#7a3e22; --accent-soft:rgba(232,118,63,.16);
+    --city:#8fb0cf; --city-soft:#2c3c4b; --exist:#8fb586;
+    --water:#22323d; --park:#22301f; --road:#2c3234; --road-edge:#1a1e20; --major:#3a3e3b; --rail:#9aa39e; --yard-other:#262b2c; --site:#e3e6e1;
+    --focus:#7fb0ff;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#15181a; --paper-2:#1c2022; --panel:#1f2426; --line:#333a3d; --line-2:#485155;
+  --ink:#eef0ec; --ink-2:#b3bab5; --ink-3:#7f8884;
+  --accent:#e8763f; --accent-2:#7a3e22; --accent-soft:rgba(232,118,63,.16);
+  --city:#8fb0cf; --city-soft:#2c3c4b; --exist:#8fb586;
+  --water:#22323d; --park:#22301f; --road:#2c3234; --road-edge:#1a1e20; --major:#3a3e3b; --rail:#9aa39e; --yard-other:#262b2c; --site:#e3e6e1;
+  --focus:#7fb0ff;
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;padding-inline:clamp(16px,3vw,40px);padding-block:0 64px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0}
+a{color:var(--accent)}
+.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+/* header */
+header{max-width:1320px;margin:0 auto;padding-block:26px 18px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:18px 32px;align-items:end}
+header h1{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.01em;line-height:1.05}
+header .sub{max-width:62ch;color:var(--ink-2);margin-top:8px}
+header .vint{font-size:12.5px;color:var(--ink-3);text-align:right;line-height:1.55}
+@media (max-width:760px){header{grid-template-columns:1fr}header .vint{text-align:left}}
+
+/* workspace */
+.work{max-width:1320px;margin:22px auto 0;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.9fr);gap:22px;align-items:start}
+@media (max-width:900px){.work{grid-template-columns:1fr}}
+.mapwrap{position:sticky;top:12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+@media (max-width:900px){.mapwrap{position:static}}
+.mapwrap svg{display:block;width:100%;height:min(78vh,760px);min-height:380px;touch-action:none;cursor:grab;background:var(--paper-2)}
+.mapwrap svg.dragging{cursor:grabbing}
+.maptools{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px}
+.maptools button{width:32px;height:32px;border:1px solid var(--line-2);background:var(--panel);border-radius:4px;cursor:pointer;font-size:16px;line-height:1;display:grid;place-items:center;color:var(--ink)}
+.maptools button:hover{background:var(--paper-2)}
+.legend{position:absolute;left:10px;bottom:10px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font-size:12px;display:grid;gap:5px;backdrop-filter:blur(3px)}
+.legend .row{display:flex;align-items:center;gap:8px}
+.legend .sw{width:22px;height:12px;border-radius:2px;flex:none}
+.scalebar{position:absolute;right:10px;bottom:10px;font-size:11.5px;color:var(--ink-2);background:color-mix(in srgb,var(--panel) 88%,transparent);padding:4px 8px;border:1px solid var(--line);border-radius:4px}
+.scalebar i{display:block;height:4px;border:2px solid var(--ink-2);border-top:none;margin-top:2px}
+.tip{position:fixed;pointer-events:none;z-index:20;background:var(--panel);color:var(--ink);border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:12.5px;line-height:1.45;box-shadow:0 6px 24px rgba(0,0,0,.18);max-width:260px;display:none}
+.tip b{font-family:var(--font-display);font-weight:600}
+.tip .kv{display:grid;grid-template-columns:auto auto;gap:1px 12px;margin-top:4px}
+.tip .kv span:nth-child(even){text-align:right}
+
+/* controls panel */
+.panel{display:grid;gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+.card h2{font-size:15px;font-weight:600;margin-bottom:10px}
+.dist{display:flex;align-items:baseline;gap:10px;margin:2px 0 6px}
+.dist .big{font-family:var(--font-display);font-weight:800;font-size:40px;line-height:1;letter-spacing:-.02em;color:var(--accent)}
+.dist .unit{color:var(--ink-2)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 6px}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button,.seg button{border:1px solid var(--line-2);background:transparent;border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;color:var(--ink-2)}
+.presets button[aria-pressed=true],.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.seg button{border-radius:4px}
+.hint{font-size:12.5px;color:var(--ink-3);margin-top:8px;line-height:1.45}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper)}
+.tile .v{font-family:var(--font-display);font-weight:800;font-size:26px;letter-spacing:-.01em;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile .l{font-size:12px;color:var(--ink-2);margin-top:2px}
+.tile .c{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.tile .c b{color:var(--ink-2);font-weight:500}
+
+/* comparison */
+.section{max-width:1320px;margin:34px auto 0}
+.section>h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.section>p.lede{color:var(--ink-2);max-width:70ch;margin:6px 0 0}
+.grp{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.grp h3{font-size:14px;font-weight:600;padding:12px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.grp h3 small{font-weight:400;color:var(--ink-3);font-size:12px;font-family:var(--font-body)}
+.cmp{width:100%;border-collapse:collapse}
+.cmp th{font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 18px;border-bottom:1px solid var(--line)}
+.cmp th.r,.cmp td.r{text-align:right}
+.cmp td{padding:9px 18px;border-bottom:1px solid var(--line);vertical-align:middle}
+.cmp tr:last-child td{border-bottom:none}
+.cmp td.metric{width:32%}
+.cmp td.metric small{display:block;color:var(--ink-3);font-size:11.5px}
+.cmp td.val{white-space:nowrap}
+.cmp td.val small{color:var(--ink-3);font-size:11px;margin-left:4px}
+.cmp td.bars{width:22%;min-width:110px}
+.cmp th.ex,.cmp td.ex{background:color-mix(in srgb,var(--city) 6%,transparent)}
+.cmp th.ex:first-of-type,.cmp td.ex:first-of-type{border-left:1px solid var(--line)}
+.bar{height:7px;border-radius:2px;margin:2px 0}
+.bar.co{background:var(--accent)}
+.bar.ci{background:var(--city)}
+.bar.ex{background:var(--exist)}
+.cmp th.sortable{cursor:pointer;user-select:none}
+.cmp th.sortable:hover{color:var(--ink)}
+.cmp th.sortable .arr{display:inline-block;width:1em;color:var(--accent)}
+.chip{display:inline-block;font-family:var(--font-mono);font-size:12px;padding:2px 7px;border-radius:3px;border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap}
+.chip.up{border-color:var(--accent);color:var(--accent)}
+.chip.dn{border-color:var(--city);color:var(--city)}
+.key{display:flex;gap:16px;font-size:12.5px;color:var(--ink-2);margin-top:12px;flex-wrap:wrap}
+.key i{display:inline-block;width:18px;height:7px;border-radius:2px;vertical-align:middle;margin-right:6px}
+@media (max-width:700px){.cmp td.bars,.cmp th.bars{display:none}.cmp td,.cmp th{padding-inline:12px}.cmp td.metric{width:auto}}
+
+/* collapsible */
+.fold summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.fold summary::-webkit-details-marker{display:none}
+.fold summary h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.fold summary .cnt{font-family:var(--font-body);font-weight:400;font-size:14px;color:var(--ink-3);margin-left:8px}
+.fold .chev{width:10px;height:10px;border-right:2px solid var(--ink-2);border-bottom:2px solid var(--ink-2);transform:rotate(45deg);transition:transform .2s;margin-right:6px;flex:none}
+.fold[open] .chev{transform:rotate(-135deg)}
+.fold summary:hover h2{color:var(--accent)}
+/* tract list */
+.tl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tl th{font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 14px;border-bottom:1px solid var(--line)}
+.tl td{padding:7px 14px;border-bottom:1px solid var(--line)}
+.tl th.r,.tl td.r{text-align:right}
+.tl tr:last-child td{border-bottom:none}
+.tl tr.part td:first-child::after{content:" partial";font-size:10.5px;color:var(--ink-3);margin-left:4px}
+.tl .w{display:inline-block;height:6px;background:var(--accent);border-radius:2px;vertical-align:middle;margin-right:6px}
+.tablewrap{overflow-x:auto}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actions button{border:1px solid var(--line-2);background:var(--panel);border-radius:4px;padding:7px 12px;cursor:pointer;font-size:13px}
+.actions button:hover{background:var(--paper-2)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:4px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+
+/* method */
+.method{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:18px}
+.method .card p{margin:0 0 10px;font-size:14px;color:var(--ink-2)}
+.method .card p:last-child{margin-bottom:0}
+.method .card h2{margin-bottom:8px}
+@media (prefers-reduced-motion:no-preference){.bar{transition:width .35s ease}}
+</style>
+
+<header>
+  <div>
+    <div class="eyebrow">Bridgeport · Armour Square · Chinatown &nbsp;—&nbsp; Chicago, Illinois</div>
+    <h1>Who lives next to the Canal Street Yard?</h1>
+    <p class="sub">Set a distance from the Union Pacific yard proposed as Amtrak's relocated maintenance facility. The tool selects every census tract within that distance, builds one demographic and health profile of the people living there, and compares it with the City of Chicago as a whole.</p>
+  </div>
+  <div class="vint" id="vintage"></div>
+</header>
+
+<div class="work">
+  <div class="mapwrap" id="mapwrap">
+    <svg id="map" role="img" aria-label="Map of the Canal Street Yard, the selected distance band, and census tracts"></svg>
+    <div class="maptools">
+      <button id="zin" title="Zoom in" aria-label="Zoom in">+</button>
+      <button id="zout" title="Zoom out" aria-label="Zoom out">−</button>
+      <button id="zfit" title="Fit to distance band" aria-label="Fit map to distance band">⌖</button>
+    </div>
+    <div class="legend">
+      <div class="row"><span class="sw" style="background:var(--site)"></span>UP Canal Street Yard (site)</div>
+      <div class="row"><span class="sw" style="background:var(--accent);opacity:.35"></span>Distance band</div>
+      <div class="row"><span class="sw" style="background:var(--accent);opacity:.55;border:1px solid var(--accent)"></span>Tract in cohort (darker = higher weight)</div>
+      <div class="row"><span class="sw" style="background:var(--yard-other);border:1px solid var(--line-2)"></span>Other rail yards</div>
+    </div>
+    <div class="scalebar" id="scalebar"><span id="scaletxt">1,000 ft</span><i id="scalebarline"></i></div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <h2>Distance from the yard</h2>
+      <div class="dist"><span class="big num" id="distBig">1,000</span><span class="unit">feet <span id="distMi" class="num"></span></span></div>
+      <input type="range" id="dist" min="0" max="5280" step="50" value="1000" aria-label="Distance from the yard in feet">
+      <div class="presets" id="presets">
+        <button data-ft="0">Touching</button><button data-ft="500">500 ft</button><button data-ft="1000" aria-pressed="true">1,000 ft</button><button data-ft="1500">1,500 ft</button><button data-ft="2640">½ mile</button><button data-ft="5280">1 mile</button>
+      </div>
+      <h2 style="margin-top:18px">How a tract counts</h2>
+      <div class="seg" id="modes" role="group" aria-label="Inclusion rule">
+        <button data-mode="pop" aria-pressed="true">Weighted by residents inside</button>
+        <button data-mode="area">Weighted by land area inside</button>
+        <button data-mode="touch">Any part within distance</button>
+      </div>
+      <p class="hint" id="modeHint"></p>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div class="card" id="summaryCard">
+      <h2>In one sentence</h2>
+      <p id="sentence" style="margin:0;color:var(--ink-2)"></p>
+      <div class="actions"><button id="copyBtn">Copy summary</button><button id="copyTable">Copy comparison table</button></div>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="compare">
+  <h2>Cohort compared with Chicago and the existing 14th Street site</h2>
+  <p class="lede">Each row aggregates the selected tracts into a single figure (counts summed, rates recomputed from the summed numerators and denominators) and sets it beside the citywide figure from the same survey. The two right-hand columns apply the same distance and inclusion rule to Amtrak's existing 14th Street maintenance yard, so the proposed and current neighbours can be compared like for like. Margins of error are shown where the Census publishes them.</p>
+  <div class="key"><span><i style="background:var(--accent)"></i>Near proposed site</span><span><i style="background:var(--exist)"></i>Near existing 14th St site</span><span><i style="background:var(--city)"></i>City of Chicago</span><span>× = rate near the proposed site relative to the comparison</span></div>
+  <div id="groups"></div>
+</section>
+
+<section class="section" id="tracts">
+  <details class="fold" id="tractFold">
+    <summary><h2>Tracts in the cohort <span class="cnt" id="tractCount"></span></h2><span class="chev" aria-hidden="true"></span></summary>
+    <p class="lede">Distance is the shortest gap between the tract boundary and the yard boundary. Weight is the share of the tract that counts toward the profile under the rule you chose above.</p>
+    <div class="grp" style="margin-top:16px"><div class="tablewrap"><table class="tl" id="tractTable"></table></div></div>
+  </details>
+</section>
+
+<section class="section" id="method">
+  <h2>Method, sources and caveats</h2>
+  <div class="method">
+    <div class="card"><h2>The site</h2>
+      <p>The footprint is the Union Pacific Canal Street Yard as mapped in OpenStreetMap (way 56246278), roughly <span id="yardAcres"></span> acres running along the South Branch of the Chicago River from about 16th Street to Pershing Road. Amtrak has not published a parcel-level plan; when it does, the buffer can be re-drawn from that footprint instead.</p>
+      <p>The existing-site columns use Amtrak's current maintenance yard south of Union Station (the Chicago Car Yard, OpenStreetMap way 880427556, about <span id="yardBAcres"></span> acres between Roosevelt Road and 18th Street along the river). The same distance and inclusion rule are applied to it; it is not drawn on the map.</p>
+      <p>Distances are straight-line feet in a local planar projection centred on the yard. Buffers are measured from the yard boundary, not its centre.</p></div>
+    <div class="card"><h2>Three inclusion rules</h2>
+      <p><b>Any part within distance</b> counts a whole tract as soon as its boundary comes within the set distance. Simple and inclusive, but it credits the cohort with residents who may live half a mile further away.</p>
+      <p><b>Weighted by land area</b> counts each tract in proportion to the share of its area inside the band (sampled on a 30-foot grid). Standard practice in exposure studies; assumes people are spread evenly across the tract.</p>
+      <p><b>Weighted by residents</b> counts each tract in proportion to the share of its 2020 Census population living in blocks whose centre is inside the band. Usually the most faithful of the three, because it ignores rail land, river and industrial parcels where nobody lives.</p></div>
+    <div class="card"><h2>Data</h2>
+      <p><b>American Community Survey</b> 5-year estimates, <span id="acsSpan"></span>, at the tract level; the city comparison uses the same tables for Chicago city (place 1714000). Sentinel values for suppressed estimates are treated as missing. Medians cannot be summed, so median household income and median year built are shown as household-weighted averages of tract medians and labelled as such.</p>
+      <p><b>CDC PLACES</b>, 2025 release (BRFSS <span id="placesYears"></span>), model-based crude prevalence among adults 18+. These are small-area estimates, not surveys of these specific residents, and are aggregated here by adult population. The city figure is the PLACES crude prevalence for Chicago.</p>
+      <p><b>Geography</b> from Census TIGERweb (2020 tracts and blocks with 2020 counts). Basemap from OpenStreetMap contributors.</p></div>
+    <div class="card"><h2>What this cannot tell you</h2>
+      <p>EPA's EJScreen, the usual source for existing pollution burden and traffic proximity, was taken offline in 2025 and is not included. Health prevalence here describes the population's baseline vulnerability, not an effect of the yard.</p>
+      <p>ACS tract estimates carry wide margins of error; small differences from the city figure may not be meaningful. Where a cohort figure's margin is large relative to the estimate, treat it as indicative.</p>
+      <p>Reporting on the proposal: <a href="https://blockclubchicago.org/2026/08/21/bridgeport-residents-furious-about-amtrak-rail-yard-plans-and-fear-losing-the-white-sox/">Block Club Chicago</a>, <a href="https://abc7chicago.com/post/chicago-residents-bridgeport-chinatown-push-back-proposed-amtrak-maintenance-facility-railroad-shares-new-details/19782593/">ABC7</a>, <a href="https://chicagocitywire.com/what-amtrak-has-told-bridgeport-about-the-canal-street-yard-and-what-it-hasn-t">Chicago City Wire</a>.</p></div>
+  </div>
+</section>
+
+<div class="tip" id="tip"></div>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+const D = window.RAILYARD_DATA;
+const $ = s => document.querySelector(s);
+const fmtInt = n => n==null||isNaN(n) ? '—' : Math.round(n).toLocaleString('en-US');
+const fmtPct = (n,d=1) => n==null||isNaN(n) ? '—' : n.toFixed(d) + '%';
+const fmtUSD = n => n==null||isNaN(n) ? '—' : '$' + Math.round(n).toLocaleString('en-US');
+const BIN = D.meta.bin_ft;
+
+// ---------- metric definitions ----------
+const U18 = ['m_u5','m_5_9','m_10_14','m_15_17','f_u5','f_5_9','f_10_14','f_15_17'];
+const O65 = ['m_65_66','m_67_69','m_70_74','m_75_79','m_80_84','m_85p','f_65_66','f_67_69','f_70_74','f_75_79','f_80_84','f_85p'];
+const EDU_HS_PLUS = ['edu_hs','edu_ged','edu_somecoll1','edu_somecoll2','edu_assoc','edu_ba','edu_ma','edu_prof','edu_phd'];
+const GROUPS = [
+ {title:'Demographics', note:'ACS '+D.meta.acs_span, rows:[
+   {id:'pop', label:'Residents', kind:'count', num:['pop']},
+   {id:'hisp', label:'Hispanic or Latino', kind:'pct', num:['hispanic'], den:['re_total']},
+   {id:'asian', label:'Asian, not Hispanic', kind:'pct', num:['asian_nh'], den:['re_total']},
+   {id:'white', label:'White, not Hispanic', kind:'pct', num:['white_nh'], den:['re_total']},
+   {id:'black', label:'Black, not Hispanic', kind:'pct', num:['black_nh'], den:['re_total']},
+   {id:'other', label:'Other or two or more races, not Hispanic', kind:'pct', num:['re_total'], sub:['white_nh','black_nh','asian_nh','hispanic'], den:['re_total']},
+   {id:'u5', label:'Children under 5', kind:'pct', num:['m_u5','f_u5'], den:['age_total']},
+   {id:'u18', label:'Children under 18', kind:'pct', num:U18, den:['age_total']},
+   {id:'o65', label:'Adults 65 and over', kind:'pct', num:O65, den:['age_total']},
+   {id:'fb', label:'Foreign-born', kind:'pct', num:['foreign_born'], den:['nat_total']},
+   {id:'lep', label:'Limited-English-speaking households', kind:'pct', num:['lep_hh_spanish','lep_hh_indoeuro','lep_hh_asian','lep_hh_other'], den:['hh_lang_total'], sublabel:'share of households'},
+ ]},
+ {title:'Education, income, housing', note:'ACS '+D.meta.acs_span, rows:[
+   {id:'nohs', label:'Adults 25+ without a high school diploma', kind:'pct', num:['edu_total'], sub:EDU_HS_PLUS, den:['edu_total']},
+   {id:'ba', label:"Adults 25+ with a bachelor's degree or higher", kind:'pct', num:['edu_ba','edu_ma','edu_prof','edu_phd'], den:['edu_total']},
+   {id:'mhi', label:'Median household income', kind:'median', v:'med_hh_income', w:'occ_units', sublabel:'household-weighted average of tract medians', fmt:fmtUSD},
+   {id:'pci', label:'Per-capita income', kind:'percap', v:'per_capita_income', w:'pop', fmt:fmtUSD},
+   {id:'pov', label:'People below the poverty line', kind:'pct', num:['pov_below'], den:['pov_total']},
+   {id:'unemp', label:'Unemployment rate', kind:'pct', num:['unemployed'], den:['civ_labor_force'], sublabel:'civilian labor force 16+'},
+   {id:'unins', label:'People without health insurance', kind:'pct', num:['unins_u19','unins_19_34','unins_35_64','unins_65p'], den:['ins_total'], sublabel:'civilian noninstitutionalized population'},
+   {id:'rent', label:'Renter-occupied homes', kind:'pct', num:['renter_occ'], den:['occ_units']},
+   {id:'noveh', label:'Households without a vehicle', kind:'pct', num:['hh_no_vehicle'], den:['hh_total']},
+   {id:'kids', label:'Households with children', kind:'pct', num:['hh_with_kids'], den:['hh_kids_total']},
+   {id:'yb', label:'Median year housing was built', kind:'median', v:'med_year_built', w:'occ_units', sublabel:'household-weighted average of tract medians', fmt:n=>n==null?'—':String(Math.round(n)), noratio:true, nobar:true},
+ ]},
+ {title:'Health and vulnerability', note:'CDC PLACES 2025 release · adults 18+ · modeled crude prevalence', rows:[
+   {id:'CASTHMA', label:'Current asthma', kind:'places'},
+   {id:'COPD', label:'COPD', kind:'places'},
+   {id:'CHD', label:'Coronary heart disease', kind:'places'},
+   {id:'STROKE', label:'Stroke', kind:'places'},
+   {id:'DIABETES', label:'Diabetes', kind:'places'},
+   {id:'BPHIGH', label:'High blood pressure', kind:'places'},
+   {id:'CANCER', label:'Cancer (excluding skin)', kind:'places'},
+   {id:'DEPRESSION', label:'Depression', kind:'places'},
+   {id:'GHLTH', label:'Fair or poor general health', kind:'places'},
+   {id:'PHLTH', label:'Frequent physical distress', kind:'places', sublabel:'14+ poor physical-health days a month'},
+   {id:'MHLTH', label:'Frequent mental distress', kind:'places', sublabel:'14+ poor mental-health days a month'},
+   {id:'DISABILITY', label:'Any disability', kind:'places'},
+   {id:'ACCESS2', label:'No health insurance, ages 18–64', kind:'places'},
+   {id:'CSMOKING', label:'Current smoking', kind:'places'},
+   {id:'OBESITY', label:'Obesity', kind:'places'},
+   {id:'LACKTRPT', label:'Lack of reliable transportation', kind:'places'},
+   {id:'FOODINSECU', label:'Food insecurity', kind:'places'},
+   {id:'HOUSINSECU', label:'Housing insecurity', kind:'places'},
+   {id:'CHECKUP', label:'Routine checkup in past year', kind:'places'},
+ ]},
+];
+
+// ---------- state ----------
+const state = {ft:1000, mode:'pop', sort:{col:'relCity', dir:-1}};
+const MODE_HINT = {
+  touch:'A tract joins the cohort when any part of its boundary is within the set distance, and then counts in full.',
+  area:'Each tract counts in proportion to the share of its land area inside the distance band.',
+  pop:'Each tract counts in proportion to the share of its 2020 Census residents whose block lies inside the distance band.'
+};
+
+function weightOf(t, site){
+  const ft = state.ft; const b = site==='b';
+  const dist = b ? t.dist_b : t.dist, areaCdf = b ? t.area_cdf_b : t.area_cdf, popCdf = b ? t.pop_cdf_b : t.pop_cdf;
+  if (state.mode==='touch') return dist <= ft ? 1 : 0;
+  const idx = Math.floor(ft/BIN) - 1; // cdf[i] = within (i+1)*BIN
+  if (state.mode==='area'){ if(!t.area_n) return 0; return idx<0 ? (dist===0 ? areaCdf[0]/t.area_n : 0) : Math.min(1,(areaCdf[Math.min(idx,areaCdf.length-1)]||0)/t.area_n); }
+  if (!t.pop2020) return 0;
+  return idx<0 ? (popCdf[0]/t.pop2020) : Math.min(1,(popCdf[Math.min(idx,popCdf.length-1)]||0)/t.pop2020);
+}
+
+// ---------- aggregation ----------
+function sumVars(rows, keys){ // rows: [{acs, w}]
+  let e=0, m2=0, any=false;
+  for (const r of rows){ if(!r.acs) continue; for(const k of keys){ const v=r.acs[k]; if(!v||v[0]==null) continue; any=true; e+=r.w*v[0]; m2+=(r.w*(v[1]||0))**2; } }
+  return any ? {e, m:Math.sqrt(m2)} : null;
+}
+function computeRow(def, rows, placesRows){
+  if (def.kind==='count'){ const s=sumVars(rows, def.num); return s && {v:s.e, moe:s.m}; }
+  if (def.kind==='pct'){
+    const n=sumVars(rows, def.num); const d=sumVars(rows, def.den); if(!n||!d||!d.e) return null;
+    let ne=n.e, nm2=n.m**2;
+    if (def.sub){ const s=sumVars(rows, def.sub); if(s){ ne-=s.e; nm2+=s.m**2; } }
+    const p=ne/d.e; let inner=nm2 - p*p*d.m*d.m; const moe = Math.sqrt(inner>0?inner:nm2+p*p*d.m*d.m)/d.e;
+    return {v:p*100, moe:moe*100, num:ne, den:d.e};
+  }
+  if (def.kind==='median' || def.kind==='percap'){
+    let num=0, den=0; for(const r of rows){ if(!r.acs) continue; const v=r.acs[def.v], w=r.acs[def.w]; if(!v||v[0]==null||!w||w[0]==null) continue; num+=r.w*v[0]*w[0]; den+=r.w*w[0]; }
+    return den? {v:num/den} : null;
+  }
+  if (def.kind==='places'){
+    let num=0, den=0, lo=0, hi=0; for(const r of placesRows){ const p=r.places&&r.places[def.id]; if(!p||!r.pop18) continue; num+=r.w*p[0]*r.pop18; lo+=r.w*p[1]*r.pop18; hi+=r.w*p[2]*r.pop18; den+=r.w*r.pop18; }
+    return den? {v:num/den, lo:lo/den, hi:hi/den} : null;
+  }
+}
+const CITY_ROWS=[{acs:D.chicago.acs, w:1}];
+function cityRow(def){
+  if (def.kind==='places'){ const p=D.chicago.places[def.id]; return p? {v:p[0], lo:p[1], hi:p[2]} : null; }
+  return computeRow(def, CITY_ROWS, []);
+}
+
+function aggregate(){
+  const rows=[], rowsB=[];
+  for(const t of D.tracts){ const w=weightOf(t,'a'); if(w>0) rows.push({t, w, acs:t.acs, places:t.places, pop18:t.pop18}); const wb=weightOf(t,'b'); if(wb>0) rowsB.push({t, w:wb, acs:t.acs, places:t.places, pop18:t.pop18}); }
+  rows.sort((a,b)=>a.t.dist-b.t.dist || b.w-a.w); rowsB.sort((a,b)=>a.t.dist_b-b.t.dist_b || b.w-a.w);
+  const results={}; for(const g of GROUPS) for(const r of g.rows) results[r.id]={co:computeRow(r, rows, rows), ci:cityRow(r), ex:computeRow(r, rowsB, rowsB), def:r};
+  return {rows, rowsB, results};
+}
+
+// ---------- rendering: panel ----------
+function renderTiles(agg){
+  const R=agg.results; const n=agg.rows.length, partial=agg.rows.filter(r=>r.w<0.999).length;
+  const pop=R.pop.co, u18=R.u18.co, o65=R.o65.co;
+  const share = pop && R.pop.ci ? (pop.v/R.pop.ci.v*100) : null;
+  const diff=(a,b)=>{ if(a==null||b==null) return '—'; const d=Math.round(a-b); return d===0?'same as the existing site':`<b>${fmtInt(Math.abs(d))} ${d>0?'more':'fewer'}</b> than the existing site`; };
+  const exPop=R.pop.ex&&R.pop.ex.v, exU18=R.u18.ex&&R.u18.ex.num, exO65=R.o65.ex&&R.o65.ex.num;
+  $('#tiles').innerHTML = `
+   <div class="tile"><div class="v num">${fmtInt(pop&&pop.v)}</div><div class="l">residents in the cohort</div><div class="c">${diff(pop&&pop.v, exPop)} (${fmtInt(exPop)})</div></div>
+   <div class="tile"><div class="v num">${n}</div><div class="l">census tract${n===1?'':'s'} in the cohort</div><div class="c">${state.mode==='touch'?'all counted in full':partial+' counted partially'}</div></div>
+   <div class="tile"><div class="v num">${fmtInt(u18&&u18.num)}</div><div class="l">children under 18</div><div class="c">${diff(u18&&u18.num, exU18)} (${fmtInt(exU18)})</div></div>
+   <div class="tile"><div class="v num">${fmtInt(o65&&o65.num)}</div><div class="l">adults 65 and over</div><div class="c">${diff(o65&&o65.num, exO65)} (${fmtInt(exO65)})</div></div>`;
+}
+function ratioTxt(co,ci){ if(!co||!ci||!ci.v) return null; return co.v/ci.v; }
+function sentence(agg){
+  const R=agg.results; const pop=R.pop.co; if(!pop||!agg.rows.length){ return 'No tract lies within this distance of the yard.'; }
+  const dist = state.ft===0 ? 'directly bordering' : `within ${fmtInt(state.ft)} feet of`;
+  const parts=[];
+  const pick=(id,label)=>{ const r=ratioTxt(R[id].co,R[id].ci); if(r!=null && (r>=1.25||r<=0.8)) parts.push(`${label} ${r>=1?(r.toFixed(1)+'× the citywide rate'):(Math.round((1-r)*100)+'% below the citywide rate')} (${fmtPct(R[id].co.v)} vs ${fmtPct(R[id].ci.v)})`); };
+  pick('nohs','adults without a high school diploma at'); pick('asian','Asian residents at'); pick('lep','limited-English households at'); pick('pov','poverty at'); pick('CASTHMA','adult asthma at'); pick('noveh','car-free households at'); pick('o65','seniors at');
+  const lead=`About ${fmtInt(pop.v)} people live in the ${agg.rows.length} census tract${agg.rows.length===1?'':'s'} ${dist} the Canal Street Yard`;
+  return parts.length ? `${lead}, with ${parts.slice(0,3).join('; ')}.` : `${lead}. Their profile is close to the city's on most measures.`;
+}
+function th(col,label,cls){ const on=state.sort.col===col; return `<th class="sortable ${cls}" data-col="${col}" aria-sort="${on?(state.sort.dir>0?'ascending':'descending'):'none'}" title="Sort by ${label}">${label} <span class="arr">${on?(state.sort.dir>0?'▲':'▼'):''}</span></th>`; }
+function renderCompare(agg){
+  const R=agg.results; let html='';
+  for(const g of GROUPS){
+    html+=`<div class="grp"><h3>${g.title}<small>${g.note}</small></h3><div class="tablewrap"><table class="cmp"><thead><tr>${th('measure','Measure','')}${th('co','Near proposed site','r')}${th('ci','Chicago','r')}<th class="bars"></th>${th('relCity','Relative to Chicago','r')}${th('ex','Near existing 14th St site','r ex')}${th('relEx','Relative to existing site','r ex')}</tr></thead><tbody>`;
+    const {col,dir}=state.sort;
+    const val=def=>{ const x=R[def.id]; let v;
+      if(col==='measure') return def.label.toLowerCase();
+      if(col==='co') v=x.co&&x.co.v; else if(col==='ci') v=x.ci&&x.ci.v; else if(col==='ex') v=x.ex&&x.ex.v;
+      else if(col==='relCity') v=def.noratio?null:ratioTxt(x.co,x.ci); else if(col==='relEx') v=def.noratio?null:ratioTxt(x.co,x.ex);
+      return (v==null||isNaN(v))? null : v; };
+    const ordered=g.rows.slice().sort((a,b)=>{
+      if(a.kind==='count'!==(b.kind==='count')) return a.kind==='count'?-1:1;   // Residents stays pinned
+      const va=val(a), vb=val(b);
+      if(va==null&&vb==null) return 0; if(va==null) return 1; if(vb==null) return -1;
+      if(typeof va==='string') return dir*va.localeCompare(vb);
+      return dir*(va-vb);
+    });
+    for(const def of ordered){
+      const {co,ci,ex}=R[def.id];
+      const f = def.fmt || (def.kind==='count'?fmtInt:fmtPct);
+      const exTxt = ex? f(ex.v) : '—';
+      const exMoe = ex && ex.moe!=null ? `<small>±${def.kind==='count'?fmtInt(ex.moe):ex.moe.toFixed(1)}</small>` : (ex && ex.lo!=null ? `<small>${ex.lo.toFixed(1)}–${ex.hi.toFixed(1)}</small>`:'');
+      let exChip='';
+      if(def.kind==='count'){ if(co&&ex&&ex.v) exChip=`<span class="chip">${(co.v/ex.v).toFixed(2)}×</span>`; }
+      else if(!def.noratio){ const r=ratioTxt(co,ex); if(r!=null){ const cls = r>=1.15?'up':(r<=0.87?'dn':''); exChip=`<span class="chip ${cls}">${r.toFixed(2)}×</span>`; } }
+      else if(co&&ex){ const dlt=Math.round(co.v-ex.v); exChip=`<span class="chip">${dlt>0?'+':''}${dlt} yrs</span>`; }
+      const coTxt = co? f(co.v) : '—', ciTxt = ci? f(ci.v) : '—';
+      const coMoe = co && co.moe!=null ? `<small>±${def.kind==='count'?fmtInt(co.moe):co.moe.toFixed(1)}</small>` : (co && co.lo!=null ? `<small>${co.lo.toFixed(1)}–${co.hi.toFixed(1)}</small>`:'');
+      const ciMoe = ci && ci.moe!=null ? `<small>±${def.kind==='count'?fmtInt(ci.moe):ci.moe.toFixed(1)}</small>` : (ci && ci.lo!=null ? `<small>${ci.lo.toFixed(1)}–${ci.hi.toFixed(1)}</small>`:'');
+      let bars='';
+      if(!def.nobar && (co||ci||ex)){ const mx=Math.max(co?co.v:0,ci?ci.v:0,ex?ex.v:0)*1.08||1; const bar=(cls,r,t)=>r?`<div class="bar ${cls}" style="width:${Math.max(1,r.v/mx*100).toFixed(1)}%" title="${t}"></div>`:`<div class="bar" style="width:0"></div>`; bars=bar('co',co,'Proposed site '+coTxt)+bar('ex',ex,'Existing site '+exTxt)+bar('ci',ci,'Chicago '+ciTxt); }
+      let chip='';
+      if(def.kind==='count'){ const s = co&&ci? co.v/ci.v*100 : null; chip = s==null?'':`<span class="chip">${s.toFixed(2)}% of city</span>`; }
+      else if(!def.noratio){ const r=ratioTxt(co,ci); if(r!=null){ const cls = r>=1.15?'up':(r<=0.87?'dn':''); chip=`<span class="chip ${cls}">${r.toFixed(2)}×</span>`; } }
+      else if(co&&ci){ const dlt=Math.round(co.v-ci.v); chip=`<span class="chip">${dlt>0?'+':''}${dlt} yrs</span>`; }
+      html+=`<tr><td class="metric">${def.label}${def.sublabel?`<small>${def.sublabel}</small>`:''}</td><td class="val r num">${coTxt}${coMoe}</td><td class="val r num">${ciTxt}${ciMoe}</td><td class="bars">${bars}</td><td class="r">${chip}</td><td class="val r num ex">${exTxt}${exMoe}</td><td class="r ex">${exChip}</td></tr>`;
+    }
+    html+='</tbody></table></div></div>';
+  }
+  $('#groups').innerHTML=html;
+  $('#groups').querySelectorAll('th.sortable').forEach(h=>h.addEventListener('click',()=>{ const c=h.dataset.col; if(state.sort.col===c) state.sort.dir*=-1; else state.sort={col:c, dir:(c==='measure'?1:-1)}; renderCompare(lastAgg); }));
+}
+function renderTracts(agg){
+  let html='<thead><tr><th>Tract</th><th class="r">Distance to yard</th><th class="r">Weight</th><th class="r">Residents (ACS)</th><th class="r">2020 Census</th><th class="r">Median HH income</th><th class="r">No HS diploma</th><th class="r">Adult asthma</th></tr></thead><tbody>';
+  for(const r of agg.rows){
+    const t=r.t, a=t.acs||{};
+    const edu = a.edu_total&&a.edu_total[0] ? (1 - EDU_HS_PLUS.reduce((s,k)=>s+(a[k]&&a[k][0]||0),0)/a.edu_total[0])*100 : null;
+    const asth = t.places&&t.places.CASTHMA ? t.places.CASTHMA[0] : null;
+    html+=`<tr class="${r.w<0.999?'part':''}" data-geoid="${t.geoid}"><td>${t.name.replace('Census ','')}</td><td class="r num">${t.dist===0?'adjoins':fmtInt(t.dist)+' ft'}</td><td class="r num"><span class="w" style="width:${Math.round(r.w*40)}px"></span>${Math.round(r.w*100)}%</td><td class="r num">${fmtInt(a.pop&&a.pop[0])}</td><td class="r num">${fmtInt(t.pop2020)}</td><td class="r num">${fmtUSD(a.med_hh_income&&a.med_hh_income[0])}</td><td class="r num">${fmtPct(edu)}</td><td class="r num">${fmtPct(asth)}</td></tr>`;
+  }
+  if(!agg.rows.length) html+='<tr><td colspan="8" style="color:var(--ink-3)">No tracts within this distance.</td></tr>';
+  $('#tractTable').innerHTML=html+'</tbody>';
+  $('#tractCount').textContent=agg.rows.length?`(${agg.rows.length}) — click to expand`:'';
+}
+
+// ---------- map ----------
+const svgNS='http://www.w3.org/2000/svg';
+const svg=$('#map');
+const el=(n,attrs,parent)=>{const e=document.createElementNS(svgNS,n); for(const k in attrs) e.setAttribute(k,attrs[k]); (parent||svg).appendChild(e); return e;};
+const path=(coords)=>coords.map((p,i)=>(i?'L':'M')+p[0]+' '+(-p[1])).join('');
+const ringPath=(rings)=>rings.map(r=>path(r)+'Z').join('');
+const view={x:-6000,y:-11000,w:12000,h:22000};
+const gBase=el('g',{id:'base'}), gTractFill=el('g',{}), gRoads=el('g',{'pointer-events':'none'}), gBuffer=el('g',{opacity:.34,'pointer-events':'none'}), gSite=el('g',{'pointer-events':'none'}), gTractLine=el('g',{fill:'none','pointer-events':'none'}), gLabels=el('g',{'font-family':'IBM Plex Sans, sans-serif','pointer-events':'none'});
+// defs: hatch for the site
+const defs=el('defs',{});
+const pat=el('pattern',{id:'hatch',width:'60',height:'60',patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);
+el('rect',{width:60,height:60,fill:'var(--site)','fill-opacity':.55},pat); el('line',{x1:0,y1:0,x2:0,y2:60,stroke:'var(--paper-2)','stroke-width':14},pat);
+const patY=el('pattern',{id:'hatchY',width:'80',height:'80',patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);
+el('rect',{width:80,height:80,fill:'var(--yard-other)'},patY); el('line',{x1:0,y1:0,x2:0,y2:80,stroke:'var(--line-2)','stroke-width':6,opacity:.6},patY);
+
+const B=D.basemap;
+for(const f of B.parks) el('path',{d:path(f.c)+'Z',fill:'var(--park)',stroke:'none'},gBase);
+for(const f of B.industrial) el('path',{d:path(f.c)+'Z',fill:'var(--paper)',stroke:'none',opacity:.6},gBase);
+for(const f of B.yards) if(f.id!==56246278) el('path',{d:path(f.c)+'Z',fill:'url(#hatchY)',stroke:'var(--line-2)','stroke-width':1,'vector-effect':'non-scaling-stroke'},gBase);
+for(const f of B.water){ if(f.poly) el('path',{d:path(f.c)+'Z',fill:'var(--water)',stroke:'none'},gBase); else el('path',{d:path(f.c),fill:'none',stroke:'var(--water)','stroke-width':3,'vector-effect':'non-scaling-stroke'},gBase); }
+for(const f of B.pois) el('path',{d:path(f.c)+'Z',fill:'var(--paper-2)',stroke:'var(--line-2)','stroke-width':.6,'vector-effect':'non-scaling-stroke',opacity:.9},gBase);
+// roads: casing then fill
+const roadW={minor:[2.2,1.2],major:[4.5,2.8],hwy:[7,4.5]};
+for(const k of ['minor','major','hwy']){ const g1=el('g',{fill:'none',stroke:'var(--road-edge)','stroke-width':roadW[k][0],'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round'},gRoads); for(const f of B.roads) if(f.k===k) el('path',{d:path(f.c),'vector-effect':'non-scaling-stroke'},g1); }
+for(const k of ['minor','major','hwy']){ const g2=el('g',{fill:'none',stroke:k==='minor'?'var(--road)':'var(--major)','stroke-width':roadW[k][1],'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round'},gRoads); for(const f of B.roads) if(f.k===k) el('path',{d:path(f.c),'vector-effect':'non-scaling-stroke'},g2); }
+const gRail=el('g',{fill:'none',stroke:'var(--rail)','stroke-width':1.1,'vector-effect':'non-scaling-stroke',opacity:.75},gRoads);
+for(const f of B.rails) el('path',{d:path(f.c),'vector-effect':'non-scaling-stroke','stroke-dasharray':f.k==='rail'?'':'6 4'},gRail);
+// buffer + site
+const bufferPath=el('path',{d:ringPath([D.yard]),fill:'var(--accent)',stroke:'var(--accent)','stroke-linejoin':'round','stroke-linecap':'round','stroke-width':0},gBuffer);
+el('path',{d:ringPath([D.yard]),fill:'url(#hatch)',stroke:'var(--site)','stroke-width':1.6,'vector-effect':'non-scaling-stroke'},gSite);
+// tracts
+const tractEls={};
+for(const t of D.tracts){
+  if(!t.polys) continue;
+  const d=t.polys.map(poly=>ringPath(poly)).join('');
+  const fill=el('path',{d,fill:'var(--accent)','fill-opacity':0,'data-geoid':t.geoid},gTractFill);
+  const line=el('path',{d,stroke:'var(--ink-3)','stroke-width':.7,'vector-effect':'non-scaling-stroke','stroke-opacity':.55},gTractLine);
+  tractEls[t.geoid]={fill,line};
+  fill.addEventListener('pointerenter',e=>showTip(t,e)); fill.addEventListener('pointermove',e=>moveTip(e)); fill.addEventListener('pointerleave',hideTip);
+}
+// labels: major roads (one per name, longest), water names, parks named
+const byName={};
+for(const f of B.roads) if(f.n && f.k!=='minor'){ const len=segLen(f.c); if(!byName[f.n]||byName[f.n].len<len) byName[f.n]={len,f}; }
+function segLen(c){let L=0;for(let i=1;i<c.length;i++)L+=Math.hypot(c[i][0]-c[i-1][0],c[i][1]-c[i-1][1]);return L;}
+function midInfo(c){ const half=segLen(c)/2; let acc=0; for(let i=1;i<c.length;i++){ const d=Math.hypot(c[i][0]-c[i-1][0],c[i][1]-c[i-1][1]); if(acc+d>=half){ const t=(half-acc)/d; const x=c[i-1][0]+t*(c[i][0]-c[i-1][0]), y=c[i-1][1]+t*(c[i][1]-c[i-1][1]); let ang=Math.atan2(-(c[i][1]-c[i-1][1]),c[i][0]-c[i-1][0])*180/Math.PI; if(ang>90||ang<-90) ang+=180; return {x,y,ang}; } acc+=d; } return null; }
+Object.values(byName).sort((a,b)=>b.len-a.len).slice(0,20).forEach(({f})=>{ const m=midInfo(f.c); if(!m) return; const t=el('text',{x:m.x,y:-m.y,'data-px':10.5,'font-size':95,fill:'var(--ink-2)','text-anchor':'middle',transform:`rotate(${m.ang.toFixed(1)} ${m.x} ${-m.y})`,dy:'-0.35em','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22,'stroke-linejoin':'round'},gLabels); t.textContent=f.n; });
+for(const f of B.parks) if(f.n && f.k==='stadium'){ const c=centroid(f.c); const t=el('text',{x:c[0],y:-c[1],'data-px':12,'font-size':105,'font-weight':600,fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22},gLabels); t.textContent=f.n; }
+for(const f of B.water) if(f.n && !f.poly && segLen(f.c)>2500){ const m=midInfo(f.c); if(m){ const t=el('text',{x:m.x,y:-m.y,'data-px':11,'font-size':95,'font-style':'italic',fill:'var(--city)','text-anchor':'middle',transform:`rotate(${m.ang.toFixed(1)} ${m.x} ${-m.y})`,dy:'-0.3em','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':20},gLabels); t.textContent=f.n; } }
+const siteC=centroid(D.yard); { const t=el('text',{x:siteC[0]+260,y:-siteC[1],'data-px':13,'font-size':115,'font-weight':600,'font-family':'Archivo, sans-serif',fill:'var(--ink)','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':26},gLabels); t.textContent='UP Canal Street Yard'; }
+const tractLabelG=el('g',{},gLabels);
+function centroid(c){ let a=0,x=0,y=0; for(let i=0;i<c.length;i++){ const j=(i+1)%c.length; const f=c[i][0]*c[j][1]-c[j][0]*c[i][1]; a+=f; x+=(c[i][0]+c[j][0])*f; y+=(c[i][1]+c[j][1])*f; } a*=.5; if(Math.abs(a)<1) return c[0]; return [x/(6*a),y/(6*a)]; }
+
+function applyView(){ svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`); updateScale(); scaleLabels(); }
+function ftPerPx(){ const r=svg.getBoundingClientRect(); return Math.max(view.w/r.width, view.h/r.height); }
+function scaleLabels(){ const s=ftPerPx(); gLabels.querySelectorAll('text[data-px]').forEach(t=>{ const px=+t.dataset.px; t.setAttribute('font-size',(px*s).toFixed(0)); t.setAttribute('stroke-width',(px*s*0.22).toFixed(0)); }); }
+function updateScale(){ const r=svg.getBoundingClientRect(); const ftPerPx=Math.max(view.w/r.width, view.h/r.height); const target=140; let ft=[100,250,500,1000,2640,5280].reduce((b,v)=>Math.abs(v/ftPerPx-target)<Math.abs(b/ftPerPx-target)?v:b,500); $('#scaletxt').textContent = ft===5280?'1 mile':ft===2640?'½ mile':fmtInt(ft)+' ft'; $('#scalebarline').style.width=(ft/ftPerPx)+'px'; }
+function fitBand(animate){
+  const xs=D.yard.map(p=>p[0]), ys=D.yard.map(p=>p[1]); const pad=Math.max(state.ft,300)+900;
+  const bx=[Math.min(...xs)-pad, Math.max(...xs)+pad], by=[Math.min(...ys)-pad, Math.max(...ys)+pad];
+  const r=svg.getBoundingClientRect(); const asp=r.width/r.height; let w=bx[1]-bx[0], h=by[1]-by[0];
+  if(w/h<asp) w=h*asp; else h=w/asp;
+  const cx=(bx[0]+bx[1])/2, cy=-(by[0]+by[1])/2;
+  view.x=cx-w/2; view.y=cy-h/2; view.w=w; view.h=h; applyView();
+}
+function zoom(f, cx, cy){ const r=svg.getBoundingClientRect(); const px=cx==null?.5:(cx-r.left)/r.width, py=cy==null?.5:(cy-r.top)/r.height; const nw=Math.min(40000,Math.max(800,view.w*f)), nh=view.h*(nw/view.w); view.x+= (view.w-nw)*px; view.y+=(view.h-nh)*py; view.w=nw; view.h=nh; applyView(); }
+$('#zin').onclick=()=>zoom(1/1.4); $('#zout').onclick=()=>zoom(1.4); $('#zfit').onclick=()=>fitBand();
+svg.addEventListener('wheel',e=>{e.preventDefault(); zoom(e.deltaY>0?1.25:1/1.25,e.clientX,e.clientY);},{passive:false});
+let drag=null;
+svg.addEventListener('pointerdown',e=>{ drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y}; svg.setPointerCapture(e.pointerId); svg.classList.add('dragging'); });
+svg.addEventListener('pointermove',e=>{ if(!drag) return; const r=svg.getBoundingClientRect(); const s=Math.max(view.w/r.width,view.h/r.height); view.x=drag.vx-(e.clientX-drag.x)*s; view.y=drag.vy-(e.clientY-drag.y)*s; applyView(); });
+const endDrag=()=>{drag=null; svg.classList.remove('dragging');};
+svg.addEventListener('pointerup',endDrag); svg.addEventListener('pointercancel',endDrag);
+window.addEventListener('resize',()=>{applyView();});
+
+function renderMap(agg){
+  bufferPath.setAttribute('stroke-width', state.ft*2);
+  const inCohort=new Map(agg.rows.map(r=>[r.t.geoid,r.w]));
+  for(const t of D.tracts){ const e=tractEls[t.geoid]; if(!e) continue; const w=inCohort.get(t.geoid)||0; e.fill.setAttribute('fill-opacity', w? (0.08+0.28*w).toFixed(2):0); e.line.setAttribute('stroke', w?'var(--accent)':'var(--ink-3)'); e.line.setAttribute('stroke-width', w?1.4:.7); e.line.setAttribute('stroke-opacity', w?.95:.5); }
+  tractLabelG.innerHTML='';
+  for(const r of agg.rows){ if(!r.t.polys) continue; const c=centroid(r.t.polys[0][0]); const t=el('text',{x:c[0],y:-c[1],'data-px':11,'font-size':88,'font-family':'IBM Plex Mono, monospace',fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':16,opacity:.9},tractLabelG); t.textContent=r.t.name.replace('Census Tract ',''); }
+  scaleLabels();
+}
+// tooltip
+const tip=$('#tip');
+function showTip(t,e){ const w=weightOf(t,'a'); const a=t.acs||{}; const edu = a.edu_total&&a.edu_total[0] ? (1 - EDU_HS_PLUS.reduce((s,k)=>s+(a[k]&&a[k][0]||0),0)/a.edu_total[0])*100 : null;
+  tip.innerHTML=`<b>${t.name}</b><div class="kv"><span>Distance to yard</span><span class="num">${t.dist===0?'adjoins':fmtInt(t.dist)+' ft'}</span><span>Weight in cohort</span><span class="num">${w?Math.round(w*100)+'%':'not included'}</span><span>Residents (ACS)</span><span class="num">${fmtInt(a.pop&&a.pop[0])}</span><span>Median HH income</span><span class="num">${fmtUSD(a.med_hh_income&&a.med_hh_income[0])}</span><span>No HS diploma</span><span class="num">${fmtPct(edu)}</span><span>Adult asthma</span><span class="num">${fmtPct(t.places&&t.places.CASTHMA&&t.places.CASTHMA[0])}</span></div>`; tip.style.display='block'; moveTip(e); }
+function moveTip(e){ const x=e.clientX+14, y=e.clientY+14; tip.style.left=Math.min(x, window.innerWidth-280)+'px'; tip.style.top=Math.min(y, window.innerHeight-160)+'px'; }
+function hideTip(){ tip.style.display='none'; }
+
+// ---------- copy ----------
+let lastAgg=null;
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),1800); }
+async function copy(text){ try{ await navigator.clipboard.writeText(text); toast('Copied'); }catch(err){ toast('Copy blocked by the browser'); } }
+$('#copyBtn').onclick=()=>copy($('#sentence').textContent+`\n\nRule: ${MODE_HINT[state.mode]} Sources: ACS ${D.meta.acs_span}; CDC PLACES 2025; TIGER 2020.`);
+$('#copyTable').onclick=()=>{ if(!lastAgg) return; const lines=[`Measure\tNear proposed site (${fmtInt(state.ft)} ft, ${state.mode})\tChicago\tNear existing 14th St site`]; for(const g of GROUPS) for(const def of g.rows){ const {co,ci,ex}=lastAgg.results[def.id]; const f=def.fmt||(def.kind==='count'?fmtInt:fmtPct); lines.push(`${def.label}\t${co?f(co.v):'—'}\t${ci?f(ci.v):'—'}\t${ex?f(ex.v):'—'}`); } copy(lines.join('\n')); };
+
+// ---------- controls ----------
+function setFt(ft, fromSlider){ state.ft=Math.max(0,Math.min(5280,Math.round(ft/50)*50)); if(!fromSlider) $('#dist').value=state.ft; document.querySelectorAll('#presets button').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.ft===state.ft)); update(); }
+$('#dist').addEventListener('input',e=>setFt(+e.target.value,true));
+$('#presets').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ setFt(+b.dataset.ft); fitBand(); } });
+$('#modes').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; state.mode=b.dataset.mode; document.querySelectorAll('#modes button').forEach(x=>x.setAttribute('aria-pressed', x===b)); update(); });
+let fitTimer=null;
+function update(){
+  $('#distBig').textContent=fmtInt(state.ft); $('#distMi').textContent=state.ft?`(${(state.ft/5280).toFixed(2)} mi)`:'';
+  $('#modeHint').textContent=MODE_HINT[state.mode];
+  const agg=aggregate(); lastAgg=agg;
+  renderTiles(agg); $('#sentence').textContent=sentence(agg); renderCompare(agg); renderTracts(agg); renderMap(agg);
+}
+$('#vintage').innerHTML=`ACS 5-year ${D.meta.acs_span} · CDC PLACES 2025 release<br>2020 Census tracts and blocks · OpenStreetMap<br>Built ${D.meta.built}`;
+$('#yardAcres').textContent=D.meta.yard_acres; $('#yardBAcres').textContent=D.meta.yard_b_acres; $('#acsSpan').textContent=D.meta.acs_span; $('#placesYears').textContent=D.meta.places_years.join('–');
+update(); fitBand();
+$('#dist').addEventListener('change',()=>fitBand());
+})();
+</script>
