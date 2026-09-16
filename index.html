@@ -9,6 +9,7 @@
   --accent:#27251f; --accent-2:#c4ced4; --accent-soft:rgba(39,37,31,.10);
   --city:#5b7086; --city-soft:#c4ced4; --exist:#98a4ab;
   --water:#c4ced4; --park:#dfe4e0; --road:#ffffff; --road-edge:#d5dadd; --major:#f7f7f5; --rail:#5f6368; --yard-other:#e1e4e6; --site:#27251f;
+  --alert:#c8102e; --alert-soft:rgba(200,16,46,.09);
   --focus:#1c5cab;
   --radius:3px;
   --font-display:"Barlow Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
@@ -23,6 +24,7 @@
     --accent:#f2f3f4; --accent-2:#4a5054; --accent-soft:rgba(242,243,244,.12);
     --city:#8fa9c2; --city-soft:#2c3640; --exist:#6f7b83;
     --water:#243038; --park:#212925; --road:#2a2e31; --road-edge:#17191b; --major:#3a3f43; --rail:#a2a9ae; --yard-other:#25292c; --site:#f2f3f4;
+    --alert:#ff5f6d; --alert-soft:rgba(255,95,109,.14);
     --focus:#7fb0ff;
   }
 }
@@ -33,6 +35,7 @@
   --accent:#f2f3f4; --accent-2:#4a5054; --accent-soft:rgba(242,243,244,.12);
   --city:#8fa9c2; --city-soft:#2c3640; --exist:#6f7b83;
   --water:#243038; --park:#212925; --road:#2a2e31; --road-edge:#17191b; --major:#3a3f43; --rail:#a2a9ae; --yard-other:#25292c; --site:#f2f3f4;
+  --alert:#ff5f6d; --alert-soft:rgba(255,95,109,.14);
   --focus:#7fb0ff;
 }
 *{box-sizing:border-box}
@@ -94,6 +97,10 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 .tile .l{font-size:12px;color:var(--ink-2);margin-top:2px}
 .tile .c{font-size:11.5px;color:var(--ink-3);margin-top:4px}
 .tile .c b{color:var(--ink-2);font-weight:500}
+.tile.worse{border-top-color:var(--alert);background:var(--alert-soft)}
+.tile.worse .v{color:var(--alert)}
+.tile.worse .c b{color:var(--alert);font-weight:700}
+.tile .c .ex{display:block;margin-top:2px}
 
 /* comparison */
 .section{max-width:1320px;margin:34px auto 0}
@@ -122,7 +129,7 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 .cmp th.sortable:hover{color:var(--ink)}
 .cmp th.sortable .arr{display:inline-block;width:1em;color:var(--accent)}
 .chip{display:inline-block;font-family:var(--font-mono);font-size:12px;padding:2px 7px;border-radius:3px;border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap}
-.chip.up{border-color:var(--ink);color:var(--ink);background:var(--accent-soft);font-weight:600}
+.chip.up{border-color:var(--alert);color:var(--alert);background:var(--alert-soft);font-weight:600}
 .chip.dn{border-color:var(--city);color:var(--city)}
 .key{display:flex;gap:16px;font-size:12.5px;color:var(--ink-2);margin-top:12px;flex-wrap:wrap}
 .key i{display:inline-block;width:18px;height:7px;border-radius:2px;vertical-align:middle;margin-right:6px}
@@ -163,7 +170,7 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
   <div>
     <div class="eyebrow">Bridgeport · Armour Square · Chinatown &nbsp;—&nbsp; Chicago, Illinois</div>
     <h1>Who lives next to the Canal Street Yard?</h1>
-    <p class="sub">Set a distance from the Union Pacific yard proposed as Amtrak's relocated maintenance facility. The tool selects every census tract within that distance, builds one demographic and health profile of the people living there, and compares it with the City of Chicago as a whole and with the neighbours of Amtrak's existing 14th Street maintenance yard at the same distance.</p>
+    <p class="sub">Set a distance from the Union Pacific yard proposed as Amtrak's relocated maintenance facility. The tool selects every census tract within that distance, builds one demographic and health profile of the people living there, and sets it side by side with the people living the same distance from Amtrak's existing 14th Street maintenance yard, so the two locations can be compared like for like.</p>
   </div>
   <div class="vint" id="vintage"></div>
 </header>
@@ -194,12 +201,7 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
         <button data-ft="0">Touching</button><button data-ft="500">500 ft</button><button data-ft="1000" aria-pressed="true">1,000 ft</button><button data-ft="1500">1,500 ft</button><button data-ft="2640">½ mile</button><button data-ft="5280">1 mile</button>
       </div>
       <h2 style="margin-top:18px">How a tract counts</h2>
-      <div class="seg" id="modes" role="group" aria-label="Inclusion rule">
-        <button data-mode="pop" aria-pressed="true">Weighted by residents inside</button>
-        <button data-mode="area">Weighted by land area inside</button>
-        <button data-mode="touch">Any part within distance</button>
-      </div>
-      <p class="hint" id="modeHint"></p>
+      <p class="hint" id="modeHint" style="margin-top:0"></p>
     </div>
     <div class="tiles" id="tiles"></div>
     <div class="card" id="summaryCard">
@@ -211,16 +213,23 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 </div>
 
 <section class="section" id="compare">
-  <h2>Cohort compared with Chicago and the existing 14th Street site</h2>
-  <p class="lede">Each row aggregates the selected tracts into a single figure (counts summed, rates recomputed from the summed numerators and denominators) and sets it beside the citywide figure from the same survey. The two right-hand columns apply the same distance and inclusion rule to Amtrak's existing 14th Street maintenance yard, so the proposed and current neighbours can be compared like for like. Margins of error are shown where the Census publishes them.</p>
-  <div class="key"><span><i style="background:var(--accent)"></i>Near proposed site</span><span><i style="background:var(--exist)"></i>Near existing 14th St site</span><span><i style="background:var(--city)"></i>City of Chicago</span><span>× = rate near the proposed site relative to the comparison</span></div>
+  <h2>Proposed site compared with the existing 14th Street site</h2>
+  <p class="lede">Each row aggregates the tracts within the chosen distance of a site into a single figure (counts summed, rates recomputed from the summed numerators and denominators). The same distance and the same resident-weighting are applied to both yards, so the two sets of neighbours can be compared like for like. Margins of error are shown where the Census publishes them.</p>
+  <div class="key"><span><i style="background:var(--accent)"></i>Near proposed site (Canal Street Yard)</span><span><i style="background:var(--exist)"></i>Near existing site (14th Street yard)</span><span>× = proposed-site figure relative to the existing site</span></div>
   <div id="groups"></div>
+</section>
+
+<section class="section" id="sensitive">
+  <h2>Schools and hospitals within the band</h2>
+  <p class="lede">Named schools and hospitals mapped in OpenStreetMap, measured from the building or grounds to each yard's boundary. This is a first pass: licensed day-care centres, senior housing and nursing homes are not yet included, so treat the counts as a floor.</p>
+  <div class="tiles" style="margin-top:14px;max-width:560px" id="sensTiles"></div>
+  <div class="grp" style="margin-top:16px"><div class="tablewrap"><table class="tl" id="sensTable"></table></div></div>
 </section>
 
 <section class="section" id="tracts">
   <details class="fold" id="tractFold">
     <summary><h2>Tracts in the cohort <span class="cnt" id="tractCount"></span></h2><span class="chev" aria-hidden="true"></span></summary>
-    <p class="lede">Distance is the shortest gap between the tract boundary and the yard boundary. Weight is the share of the tract that counts toward the profile under the rule you chose above.</p>
+    <p class="lede">Distance is the shortest gap between the tract boundary and the proposed yard's boundary. Weight is the share of the tract's 2020 residents who live inside the distance band, which is how much of the tract counts toward the profile.</p>
     <div class="grp" style="margin-top:16px"><div class="tablewrap"><table class="tl" id="tractTable"></table></div></div>
   </details>
 </section>
@@ -230,19 +239,19 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
   <div class="method">
     <div class="card"><h2>The site</h2>
       <p>The footprint is the Union Pacific Canal Street Yard as mapped in OpenStreetMap (way 56246278), roughly <span id="yardAcres"></span> acres running along the South Branch of the Chicago River from about 16th Street to Pershing Road. Amtrak has not published a parcel-level plan; when it does, the buffer can be re-drawn from that footprint instead.</p>
-      <p>The existing-site columns use Amtrak's current maintenance yard south of Union Station (the Chicago Car Yard, OpenStreetMap way 880427556, about <span id="yardBAcres"></span> acres between Roosevelt Road and 18th Street along the river). The same distance and inclusion rule are applied to it; it is not drawn on the map.</p>
+      <p>The existing-site columns use Amtrak's current maintenance yard south of Union Station (the Chicago Car Yard, OpenStreetMap way 880427556, about <span id="yardBAcres"></span> acres between Roosevelt Road and 18th Street along the river). The same distance and weighting are applied to it; it is not drawn on the map.</p>
       <p>Distances are straight-line feet in a local planar projection centred on the yard. Buffers are measured from the yard boundary, not its centre.</p></div>
-    <div class="card"><h2>Three inclusion rules</h2>
-      <p><b>Any part within distance</b> counts a whole tract as soon as its boundary comes within the set distance. Simple and inclusive, but it credits the cohort with residents who may live half a mile further away.</p>
-      <p><b>Weighted by land area</b> counts each tract in proportion to the share of its area inside the band (sampled on a 30-foot grid). Standard practice in exposure studies; assumes people are spread evenly across the tract.</p>
-      <p><b>Weighted by residents</b> counts each tract in proportion to the share of its 2020 Census population living in blocks whose centre is inside the band. Usually the most faithful of the three, because it ignores rail land, river and industrial parcels where nobody lives.</p></div>
+    <div class="card"><h2>How tracts are weighted</h2>
+      <p>Each census tract counts in proportion to the share of its 2020 Census population living in blocks whose centre is inside the distance band. A tract with all of its residents inside the band counts in full; a tract with a tenth of its residents inside counts a tenth.</p>
+      <p>This resident-weighting was chosen over the simpler "any part of the tract touches the band" rule because it ignores rail land, river and industrial parcels where nobody lives, so it does not credit a site with residents who actually live half a mile further away. It is the standard approach in exposure studies when block-level population is available.</p></div>
     <div class="card"><h2>Data</h2>
-      <p><b>American Community Survey</b> 5-year estimates, <span id="acsSpan"></span>, at the tract level; the city comparison uses the same tables for Chicago city (place 1714000). Sentinel values for suppressed estimates are treated as missing. Medians cannot be summed, so median household income and median year built are shown as household-weighted averages of tract medians and labelled as such.</p>
-      <p><b>CDC PLACES</b>, 2025 release (BRFSS <span id="placesYears"></span>), model-based crude prevalence among adults 18+. These are small-area estimates, not surveys of these specific residents, and are aggregated here by adult population. The city figure is the PLACES crude prevalence for Chicago.</p>
+      <p><b>American Community Survey</b> 5-year estimates, <span id="acsSpan"></span>, at the tract level, identical tables for both sites. Sentinel values for suppressed estimates are treated as missing. Medians cannot be summed, so median household income and median year built are shown as household-weighted averages of tract medians and labelled as such.</p>
+      <p><b>CDC PLACES</b>, 2025 release (BRFSS <span id="placesYears"></span>), model-based crude prevalence among adults 18+. These are small-area estimates, not surveys of these specific residents, and are aggregated here by adult population for each site.</p>
+      <p><b>Schools and hospitals</b> are named amenity features from OpenStreetMap within about a mile of either yard, measured from the feature's centre to the yard boundary; the list is a floor, not a complete inventory of sensitive uses.</p>
       <p><b>Geography</b> from Census TIGERweb (2020 tracts and blocks with 2020 counts). Basemap from OpenStreetMap contributors.</p></div>
     <div class="card"><h2>What this cannot tell you</h2>
       <p>EPA's EJScreen, the usual source for existing pollution burden and traffic proximity, was taken offline in 2025 and is not included. Health prevalence here describes the population's baseline vulnerability, not an effect of the yard.</p>
-      <p>ACS tract estimates carry wide margins of error; small differences from the city figure may not be meaningful. Where a cohort figure's margin is large relative to the estimate, treat it as indicative.</p>
+      <p>ACS tract estimates carry wide margins of error, and the existing-site cohort is small, so its margins are especially wide; small differences between the two sites may not be meaningful. Where a figure's margin is large relative to the estimate, treat it as indicative.</p>
       <p>Reporting on the proposal: <a href="https://blockclubchicago.org/2026/08/21/bridgeport-residents-furious-about-amtrak-rail-yard-plans-and-fear-losing-the-white-sox/">Block Club Chicago</a>, <a href="https://abc7chicago.com/post/chicago-residents-bridgeport-chinatown-push-back-proposed-amtrak-maintenance-facility-railroad-shares-new-details/19782593/">ABC7</a>, <a href="https://chicagocitywire.com/what-amtrak-has-told-bridgeport-about-the-canal-street-yard-and-what-it-hasn-t">Chicago City Wire</a>.</p></div>
   </div>
 </section>
@@ -254,11 +263,14 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 <script>
 (function(){
 const D = window.RAILYARD_DATA;
+if(!D){ document.addEventListener('DOMContentLoaded',()=>{ const b=document.createElement('div'); b.style.cssText='margin:16px auto;max-width:1320px;padding:12px 16px;border:2px solid #c8102e;color:#c8102e;font-weight:600'; b.textContent='data.js failed to load. Upload data.js next to index.html.'; document.querySelector('.work').before(b); }); throw new Error('data.js missing'); }
+if(!D.tracts[0] || D.tracts[0].dist_b==null){ setTimeout(()=>{ const b=document.createElement('div'); b.style.cssText='margin:16px auto;max-width:1320px;padding:12px 16px;border:2px solid #c8102e;color:#c8102e;font-weight:600'; b.textContent='data.js is an older version without the 14th Street yard data. Upload the current data.js next to index.html.'; document.querySelector('.work').before(b); },0); }
 const $ = s => document.querySelector(s);
 const fmtInt = n => n==null||isNaN(n) ? '—' : Math.round(n).toLocaleString('en-US');
 const fmtPct = (n,d=1) => n==null||isNaN(n) ? '—' : n.toFixed(d) + '%';
 const fmtUSD = n => n==null||isNaN(n) ? '—' : '$' + Math.round(n).toLocaleString('en-US');
 const BIN = D.meta.bin_ft;
+const SENSITIVE=[["James Ward Elementary School", "school", 469, 4838], ["Mark Sheridan Magnet School", "school", 667, 4784], ["Minnie Miñoso Academy", "school", 817, 9748], ["Saint Jerome School", "school", 825, 5350], ["Saint Therese Chinese Catholic School", "school", 827, 2386], ["Air Force Academy High School", "school", 840, 10593], ["John C. Haines Elementary School", "school", 867, 2730], ["Healy Elementary School", "school", 998, 6476], ["Santa Lucia School", "school", 1117, 6599], ["Bridgeport Catholic Academy", "school", 1478, 11100], ["Hendricks Elementary School", "school", 2156, 14921], ["National Teachers Academy", "school", 2161, 2917], ["John B. Drake Elementary School", "school", 2226, 5455], ["Perspectives Rodney D. Joslin High School", "school", 2601, 2245], ["Bronzeville Classical School", "school", 2626, 13678], ["Chicago Kids Klub", "school", 2758, 15319], ["Walsh Elementary School", "school", 2843, 2937], ["Perspectives/IIT Math & Science Academy", "school", 3168, 11046], ["De La Salle Institute", "school", 3293, 9689], ["Ray Graham Training Center High School", "school", 3324, 4225], ["Armour Elementary School", "school", 3338, 8807], ["Insight Hospital & Medical Center", "hospital", 3615, 5193], ["Saint Gabriel School", "school", 3652, 16281], ["Saint Barbara Grammar School", "school", 3796, 6740], ["Jungman Elementary School", "school", 4659, 4263], ["Ida B. Wells Elementary School", "school", 4321, 11875], ["Wendell Phillips Academy High School", "school", 4514, 12615], ["Holden Elementary School", "school", 4587, 8230], ["Chicago Military Academy", "school", 4782, 10845], ["Pershing Elementary School", "school", 4819, 9107], ["Dunbar High School", "school", 5075, 7982]];
 
 // ---------- metric definitions ----------
 const U18 = ['m_u5','m_5_9','m_10_14','m_15_17','f_u5','f_5_9','f_10_14','f_15_17'];
@@ -315,16 +327,17 @@ const GROUPS = [
 ];
 
 // ---------- state ----------
-const state = {ft:1000, mode:'pop', sort:{col:'relCity', dir:-1}};
+const state = {ft:1000, mode:'pop', sort:{col:'relEx', dir:-1}};
 const MODE_HINT = {
   touch:'A tract joins the cohort when any part of its boundary is within the set distance, and then counts in full.',
   area:'Each tract counts in proportion to the share of its land area inside the distance band.',
-  pop:'Each tract counts in proportion to the share of its 2020 Census residents whose block lies inside the distance band.'
+  pop:'Each census tract counts in proportion to the share of its 2020 Census residents whose block lies inside the distance band, so rail land, river and industrial parcels where nobody lives do not inflate the count. The same rule is applied to both yards.'
 };
 
 function weightOf(t, site){
   const ft = state.ft; const b = site==='b';
   const dist = b ? t.dist_b : t.dist, areaCdf = b ? t.area_cdf_b : t.area_cdf, popCdf = b ? t.pop_cdf_b : t.pop_cdf;
+  if (dist==null || !popCdf) return 0;
   if (state.mode==='touch') return dist <= ft ? 1 : 0;
   const idx = Math.floor(ft/BIN) - 1; // cdf[i] = within (i+1)*BIN
   if (state.mode==='area'){ if(!t.area_n) return 0; return idx<0 ? (dist===0 ? areaCdf[0]/t.area_n : 0) : Math.min(1,(areaCdf[Math.min(idx,areaCdf.length-1)]||0)/t.area_n); }
@@ -374,35 +387,38 @@ function aggregate(){
 function renderTiles(agg){
   const R=agg.results; const n=agg.rows.length, partial=agg.rows.filter(r=>r.w<0.999).length;
   const pop=R.pop.co, u18=R.u18.co, o65=R.o65.co;
-  const share = pop && R.pop.ci ? (pop.v/R.pop.ci.v*100) : null;
-  const diff=(a,b)=>{ if(a==null||b==null) return '—'; const d=Math.round(a-b); return d===0?'same as the existing site':`<b>${fmtInt(Math.abs(d))} ${d>0?'more':'fewer'}</b> than the existing site`; };
+  const diff=(a,b)=>{ if(a==null||b==null) return '—'; const d=Math.round(a-b); return d===0?'same as the existing site':`<b>${d>0?'▲':'▼'} ${fmtInt(Math.abs(d))} ${d>0?'more':'fewer'}</b> than the existing site`; };
+  const worse=(a,b)=> (a!=null&&b!=null&&Math.round(a-b)>0) ? ' worse' : '';
   const exPop=R.pop.ex&&R.pop.ex.v, exU18=R.u18.ex&&R.u18.ex.num, exO65=R.o65.ex&&R.o65.ex.num;
+  const nB=agg.rowsB.length;
   $('#tiles').innerHTML = `
-   <div class="tile"><div class="v num">${fmtInt(pop&&pop.v)}</div><div class="l">residents in the cohort</div><div class="c">${diff(pop&&pop.v, exPop)} (${fmtInt(exPop)})</div></div>
-   <div class="tile"><div class="v num">${n}</div><div class="l">census tract${n===1?'':'s'} in the cohort</div><div class="c">${state.mode==='touch'?'all counted in full':partial+' counted partially'}</div></div>
-   <div class="tile"><div class="v num">${fmtInt(u18&&u18.num)}</div><div class="l">children under 18</div><div class="c">${diff(u18&&u18.num, exU18)} (${fmtInt(exU18)})</div></div>
-   <div class="tile"><div class="v num">${fmtInt(o65&&o65.num)}</div><div class="l">adults 65 and over</div><div class="c">${diff(o65&&o65.num, exO65)} (${fmtInt(exO65)})</div></div>`;
+   <div class="tile${worse(pop&&pop.v, exPop)}"><div class="v num">${fmtInt(pop&&pop.v)}</div><div class="l">residents near the proposed site</div><div class="c">${diff(pop&&pop.v, exPop)}<span class="ex">existing site: ${fmtInt(exPop)}</span></div></div>
+   <div class="tile${worse(n, nB)}"><div class="v num">${n}</div><div class="l">census tract${n===1?'':'s'} with residents in the band</div><div class="c">${diff(n, nB)}<span class="ex">existing site: ${nB}</span></div></div>
+   <div class="tile${worse(u18&&u18.num, exU18)}"><div class="v num">${fmtInt(u18&&u18.num)}</div><div class="l">children under 18</div><div class="c">${diff(u18&&u18.num, exU18)}<span class="ex">existing site: ${fmtInt(exU18)}</span></div></div>
+   <div class="tile${worse(o65&&o65.num, exO65)}"><div class="v num">${fmtInt(o65&&o65.num)}</div><div class="l">adults 65 and over</div><div class="c">${diff(o65&&o65.num, exO65)}<span class="ex">existing site: ${fmtInt(exO65)}</span></div></div>`;
 }
 function ratioTxt(co,ci){ if(!co||!ci||!ci.v) return null; return co.v/ci.v; }
 function sentence(agg){
   const R=agg.results; const pop=R.pop.co; if(!pop||!agg.rows.length){ return 'No tract lies within this distance of the yard.'; }
   const dist = state.ft===0 ? 'directly bordering' : `within ${fmtInt(state.ft)} feet of`;
   const parts=[];
-  const pick=(id,label)=>{ const r=ratioTxt(R[id].co,R[id].ci); if(r!=null && (r>=1.25||r<=0.8)) parts.push(`${label} ${r>=1?(r.toFixed(1)+'× the citywide rate'):(Math.round((1-r)*100)+'% below the citywide rate')} (${fmtPct(R[id].co.v)} vs ${fmtPct(R[id].ci.v)})`); };
-  pick('nohs','adults without a high school diploma at'); pick('asian','Asian residents at'); pick('lep','limited-English households at'); pick('pov','poverty at'); pick('CASTHMA','adult asthma at'); pick('noveh','car-free households at'); pick('o65','seniors at');
-  const lead=`About ${fmtInt(pop.v)} people live in the ${agg.rows.length} census tract${agg.rows.length===1?'':'s'} ${dist} the Canal Street Yard`;
-  return parts.length ? `${lead}, with ${parts.slice(0,3).join('; ')}.` : `${lead}. Their profile is close to the city's on most measures.`;
+  const exPop=R.pop.ex&&R.pop.ex.v;
+  const pick=(id,label)=>{ const r=ratioTxt(R[id].co,R[id].ex); if(r!=null && (r>=1.25||r<=0.8)) parts.push(`${label} ${r>=1?(r.toFixed(1)+'× the rate near the existing site'):(Math.round((1-r)*100)+'% below the rate near the existing site')} (${fmtPct(R[id].co.v)} vs ${fmtPct(R[id].ex.v)})`); };
+  pick('u18','children under 18 at'); pick('o65','seniors at'); pick('nohs','adults without a high school diploma at'); pick('lep','limited-English households at'); pick('pov','poverty at'); pick('CASTHMA','adult asthma at'); pick('noveh','car-free households at');
+  const cmp = exPop!=null ? (exPop>0 ? `, ${(pop.v/exPop).toFixed(1)} times the ${fmtInt(exPop)} who live the same distance from Amtrak's existing 14th Street yard` : ', where nobody lives within the same distance of the existing 14th Street yard') : '';
+  const lead=`About ${fmtInt(pop.v)} people live ${dist} the Canal Street Yard${cmp}`;
+  return parts.length ? `${lead}; ${parts.slice(0,3).join('; ')}.` : `${lead}. The two neighbourhoods look similar on most measures.`;
 }
 function th(col,label,cls){ const on=state.sort.col===col; return `<th class="sortable ${cls}" data-col="${col}" aria-sort="${on?(state.sort.dir>0?'ascending':'descending'):'none'}" title="Sort by ${label}">${label} <span class="arr">${on?(state.sort.dir>0?'▲':'▼'):''}</span></th>`; }
 function renderCompare(agg){
   const R=agg.results; let html='';
   for(const g of GROUPS){
-    html+=`<div class="grp"><h3>${g.title}<small>${g.note}</small></h3><div class="tablewrap"><table class="cmp"><thead><tr>${th('measure','Measure','')}${th('co','Near proposed site','r')}${th('ci','Chicago','r')}<th class="bars"></th>${th('relCity','Relative to Chicago','r')}${th('ex','Near existing 14th St site','r ex')}${th('relEx','Relative to existing site','r ex')}</tr></thead><tbody>`;
+    html+=`<div class="grp"><h3>${g.title}<small>${g.note}</small></h3><div class="tablewrap"><table class="cmp"><thead><tr>${th('measure','Measure','')}${th('co','Near proposed site','r')}${th('ex','Near existing site','r')}<th class="bars"></th>${th('relEx','Proposed relative to existing','r')}</tr></thead><tbody>`;
     const {col,dir}=state.sort;
     const val=def=>{ const x=R[def.id]; let v;
       if(col==='measure') return def.label.toLowerCase();
-      if(col==='co') v=x.co&&x.co.v; else if(col==='ci') v=x.ci&&x.ci.v; else if(col==='ex') v=x.ex&&x.ex.v;
-      else if(col==='relCity') v=def.noratio?null:ratioTxt(x.co,x.ci); else if(col==='relEx') v=def.noratio?null:ratioTxt(x.co,x.ex);
+      if(col==='co') v=x.co&&x.co.v; else if(col==='ex') v=x.ex&&x.ex.v;
+      else if(col==='relEx') v=def.noratio?null:ratioTxt(x.co,x.ex);
       return (v==null||isNaN(v))? null : v; };
     const ordered=g.rows.slice().sort((a,b)=>{
       if(a.kind==='count'!==(b.kind==='count')) return a.kind==='count'?-1:1;   // Residents stays pinned
@@ -420,24 +436,31 @@ function renderCompare(agg){
       if(def.kind==='count'){ if(co&&ex&&ex.v) exChip=`<span class="chip">${(co.v/ex.v).toFixed(2)}×</span>`; }
       else if(!def.noratio){ const r=ratioTxt(co,ex); if(r!=null){ const cls = r>=1.15?'up':(r<=0.87?'dn':''); exChip=`<span class="chip ${cls}">${r.toFixed(2)}×</span>`; } }
       else if(co&&ex){ const dlt=Math.round(co.v-ex.v); exChip=`<span class="chip">${dlt>0?'+':''}${dlt} yrs</span>`; }
-      const coTxt = co? f(co.v) : '—', ciTxt = ci? f(ci.v) : '—';
+      const coTxt = co? f(co.v) : '—';
       const coMoe = co && co.moe!=null ? `<small>±${def.kind==='count'?fmtInt(co.moe):co.moe.toFixed(1)}</small>` : (co && co.lo!=null ? `<small>${co.lo.toFixed(1)}–${co.hi.toFixed(1)}</small>`:'');
-      const ciMoe = ci && ci.moe!=null ? `<small>±${def.kind==='count'?fmtInt(ci.moe):ci.moe.toFixed(1)}</small>` : (ci && ci.lo!=null ? `<small>${ci.lo.toFixed(1)}–${ci.hi.toFixed(1)}</small>`:'');
       let bars='';
-      if(!def.nobar && (co||ci||ex)){ const mx=Math.max(co?co.v:0,ci?ci.v:0,ex?ex.v:0)*1.08||1; const bar=(cls,r,t)=>r?`<div class="bar ${cls}" style="width:${Math.max(1,r.v/mx*100).toFixed(1)}%" title="${t}"></div>`:`<div class="bar" style="width:0"></div>`; bars=bar('co',co,'Proposed site '+coTxt)+bar('ex',ex,'Existing site '+exTxt)+bar('ci',ci,'Chicago '+ciTxt); }
-      let chip='';
-      if(def.kind==='count'){ const s = co&&ci? co.v/ci.v*100 : null; chip = s==null?'':`<span class="chip">${s.toFixed(2)}% of city</span>`; }
-      else if(!def.noratio){ const r=ratioTxt(co,ci); if(r!=null){ const cls = r>=1.15?'up':(r<=0.87?'dn':''); chip=`<span class="chip ${cls}">${r.toFixed(2)}×</span>`; } }
-      else if(co&&ci){ const dlt=Math.round(co.v-ci.v); chip=`<span class="chip">${dlt>0?'+':''}${dlt} yrs</span>`; }
-      html+=`<tr><td class="metric">${def.label}${def.sublabel?`<small>${def.sublabel}</small>`:''}</td><td class="val r num">${coTxt}${coMoe}</td><td class="val r num">${ciTxt}${ciMoe}</td><td class="bars">${bars}</td><td class="r">${chip}</td><td class="val r num ex">${exTxt}${exMoe}</td><td class="r ex">${exChip}</td></tr>`;
+      if(!def.nobar && (co||ex)){ const mx=Math.max(co?co.v:0,ex?ex.v:0)*1.08||1; const bar=(cls,r,t)=>r?`<div class="bar ${cls}" style="width:${Math.max(1,r.v/mx*100).toFixed(1)}%" title="${t}"></div>`:`<div class="bar" style="width:0"></div>`; bars=bar('co',co,'Proposed site '+coTxt)+bar('ex',ex,'Existing site '+exTxt); }
+      html+=`<tr><td class="metric">${def.label}${def.sublabel?`<small>${def.sublabel}</small>`:''}</td><td class="val r num">${coTxt}${coMoe}</td><td class="val r num">${exTxt}${exMoe}</td><td class="bars">${bars}</td><td class="r">${exChip}</td></tr>`;
     }
     html+='</tbody></table></div></div>';
   }
   $('#groups').innerHTML=html;
   $('#groups').querySelectorAll('th.sortable').forEach(h=>h.addEventListener('click',()=>{ const c=h.dataset.col; if(state.sort.col===c) state.sort.dir*=-1; else state.sort={col:c, dir:(c==='measure'?1:-1)}; renderCompare(lastAgg); }));
 }
+function renderSensitive(){
+  const ft=state.ft; const inA=SENSITIVE.filter(s=>s[2]<=ft), inB=SENSITIVE.filter(s=>s[3]<=ft);
+  const schoolsA=inA.filter(s=>s[1]!=='hospital').length, schoolsB=inB.filter(s=>s[1]!=='hospital').length;
+  const worse=(a,b)=>a>b?' worse':'';
+  const diff=(a,b)=>{ const d=a-b; return d===0?'same as the existing site':`<b>${d>0?'▲':'▼'} ${Math.abs(d)} ${d>0?'more':'fewer'}</b> than the existing site`; };
+  $('#sensTiles').innerHTML=`<div class="tile${worse(schoolsA,schoolsB)}"><div class="v num">${schoolsA}</div><div class="l">schools within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(schoolsA,schoolsB)}<span class="ex">existing site: ${schoolsB}</span></div></div>
+   <div class="tile${worse(inA.length-schoolsA,inB.length-schoolsB)}"><div class="v num">${inA.length-schoolsA}</div><div class="l">hospitals within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(inA.length-schoolsA,inB.length-schoolsB)}<span class="ex">existing site: ${inB.length-schoolsB}</span></div></div>`;
+  const list=SENSITIVE.filter(s=>Math.min(s[2],s[3])<=Math.max(ft,2640)).sort((a,b)=>Math.min(a[2],a[3])-Math.min(b[2],b[3]));
+  let html='<thead><tr><th>Site</th><th>Type</th><th class="r">Distance to proposed yard</th><th class="r">Distance to existing yard</th></tr></thead><tbody>';
+  for(const s of list){ const fa=s[2]<=ft, fb=s[3]<=ft; html+=`<tr><td>${s[0]}</td><td>${s[1]}</td><td class="r num" style="${fa?'color:var(--alert);font-weight:600':''}">${fmtInt(s[2])} ft${fa?' ●':''}</td><td class="r num" style="${fb?'font-weight:600':''}">${fmtInt(s[3])} ft${fb?' ●':''}</td></tr>`; }
+  $('#sensTable').innerHTML=html+'</tbody>';
+}
 function renderTracts(agg){
-  let html='<thead><tr><th>Tract</th><th class="r">Distance to yard</th><th class="r">Weight</th><th class="r">Residents (ACS)</th><th class="r">2020 Census</th><th class="r">Median HH income</th><th class="r">No HS diploma</th><th class="r">Adult asthma</th></tr></thead><tbody>';
+  let html='<thead><tr><th>Tract</th><th class="r">Distance to yard</th><th class="r">Share of residents in band</th><th class="r">Residents (ACS)</th><th class="r">2020 Census</th><th class="r">Median HH income</th><th class="r">No HS diploma</th><th class="r">Adult asthma</th></tr></thead><tbody>';
   for(const r of agg.rows){
     const t=r.t, a=t.acs||{};
     const edu = a.edu_total&&a.edu_total[0] ? (1 - EDU_HS_PLUS.reduce((s,k)=>s+(a[k]&&a[k][0]||0),0)/a.edu_total[0])*100 : null;
@@ -542,20 +565,23 @@ function hideTip(){ tip.style.display='none'; }
 let lastAgg=null;
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),1800); }
 async function copy(text){ try{ await navigator.clipboard.writeText(text); toast('Copied'); }catch(err){ toast('Copy blocked by the browser'); } }
-$('#copyBtn').onclick=()=>copy($('#sentence').textContent+`\n\nRule: ${MODE_HINT[state.mode]} Sources: ACS ${D.meta.acs_span}; CDC PLACES 2025; TIGER 2020.`);
-$('#copyTable').onclick=()=>{ if(!lastAgg) return; const lines=[`Measure\tNear proposed site (${fmtInt(state.ft)} ft, ${state.mode})\tChicago\tNear existing 14th St site`]; for(const g of GROUPS) for(const def of g.rows){ const {co,ci,ex}=lastAgg.results[def.id]; const f=def.fmt||(def.kind==='count'?fmtInt:fmtPct); lines.push(`${def.label}\t${co?f(co.v):'—'}\t${ci?f(ci.v):'—'}\t${ex?f(ex.v):'—'}`); } copy(lines.join('\n')); };
+$('#copyBtn').onclick=()=>copy($('#sentence').textContent+`\n\nMethod: ${MODE_HINT[state.mode]} Sources: ACS ${D.meta.acs_span}; CDC PLACES 2025; TIGER 2020.`);
+$('#copyTable').onclick=()=>{ if(!lastAgg) return; const lines=[`Measure\tNear proposed Canal Street Yard (${fmtInt(state.ft)} ft, resident-weighted)\tNear existing 14th Street yard`]; for(const g of GROUPS) for(const def of g.rows){ const {co,ex}=lastAgg.results[def.id]; const f=def.fmt||(def.kind==='count'?fmtInt:fmtPct); lines.push(`${def.label}\t${co?f(co.v):'—'}\t${ex?f(ex.v):'—'}`); } copy(lines.join('\n')); };
 
 // ---------- controls ----------
 function setFt(ft, fromSlider){ state.ft=Math.max(0,Math.min(5280,Math.round(ft/50)*50)); if(!fromSlider) $('#dist').value=state.ft; document.querySelectorAll('#presets button').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.ft===state.ft)); update(); }
 $('#dist').addEventListener('input',e=>setFt(+e.target.value,true));
 $('#presets').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ setFt(+b.dataset.ft); fitBand(); } });
-$('#modes').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; state.mode=b.dataset.mode; document.querySelectorAll('#modes button').forEach(x=>x.setAttribute('aria-pressed', x===b)); update(); });
 let fitTimer=null;
+function showError(msg){ let b=document.getElementById('errBanner'); if(!b){ b=document.createElement('div'); b.id='errBanner'; b.style.cssText='margin:16px auto;max-width:1320px;padding:12px 16px;border:2px solid var(--alert);color:var(--alert);background:var(--alert-soft);font-weight:600;border-radius:3px'; document.querySelector('.work').before(b); } b.textContent=msg; }
 function update(){
+  try { updateInner(); } catch(e){ console.error(e); showError('The dashboard could not render: '+(e&&e.message?e.message:e)+'. If this page was updated recently, make sure data.js was uploaded alongside index.html.'); }
+}
+function updateInner(){
   $('#distBig').textContent=fmtInt(state.ft); $('#distMi').textContent=state.ft?`(${(state.ft/5280).toFixed(2)} mi)`:'';
   $('#modeHint').textContent=MODE_HINT[state.mode];
   const agg=aggregate(); lastAgg=agg;
-  renderTiles(agg); $('#sentence').textContent=sentence(agg); renderCompare(agg); renderTracts(agg); renderMap(agg);
+  renderTiles(agg); $('#sentence').textContent=sentence(agg); renderCompare(agg); renderSensitive(); renderTracts(agg); renderMap(agg);
 }
 $('#vintage').innerHTML=`ACS 5-year ${D.meta.acs_span} · CDC PLACES 2025 release<br>2020 Census tracts and blocks · OpenStreetMap<br>Built ${D.meta.built}`;
 $('#yardAcres').textContent=D.meta.yard_acres; $('#yardBAcres').textContent=D.meta.yard_b_acres; $('#acsSpan').textContent=D.meta.acs_span; $('#placesYears').textContent=D.meta.places_years.join('–');
