@@ -587,8 +587,7 @@ function renderMap(agg){
   bufferPath.setAttribute('stroke-width', state.ft*2);
   const inCohort=new Map(agg.rows.map(r=>[r.t.geoid,r.w]));
   for(const t of D.tracts){ const e=tractEls[t.geoid]; if(!e) continue; const w=inCohort.get(t.geoid)||0; e.fill.setAttribute('fill-opacity', w? (0.06+0.22*w).toFixed(2):0); e.line.setAttribute('stroke', w?'var(--accent)':'var(--ink-3)'); e.line.setAttribute('stroke-width', w?1.4:.7); e.line.setAttribute('stroke-opacity', w?.95:.5); }
-  tractLabelG.innerHTML='';
-  for(const r of agg.rows){ if(!r.t.polys) continue; const c=centroid(r.t.polys[0][0]); const t=el('text',{x:c[0],y:-c[1],'data-px':11,'font-size':88,'font-family':'Barlow Semi Condensed, sans-serif',fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':16,opacity:.9},tractLabelG); t.textContent=r.t.name.replace('Census Tract ',''); }
+  tractLabelG.innerHTML='';   // tract numbers stay off the map; hover a tract for its details
   scaleLabels();
 }
 // tooltip
