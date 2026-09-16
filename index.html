@@ -234,8 +234,8 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 
 <section class="section" id="sensitive">
   <h2>Schools near the proposed yard</h2>
-  <p class="lede">Named schools mapped in OpenStreetMap, measured from the building or grounds to Amtrak's proposed maintenance facility. This is not inclusive of licensed day-care centers.</p>
-  <div class="tiles" style="margin-top:14px;max-width:280px;grid-template-columns:1fr" id="sensTiles"></div>
+  <p class="lede">Named schools mapped in OpenStreetMap, measured from the building or grounds to Amtrak's proposed maintenance facility, with enrollment from each school's district or published figure. This is not inclusive of licensed day-care centers.</p>
+  <div class="tiles" style="margin-top:14px;max-width:560px;grid-template-columns:repeat(2,1fr)" id="sensTiles"></div>
   <div class="grp" style="margin-top:16px"><div class="tablewrap"><table class="tl" id="sensTable"></table></div></div>
 </section>
 
@@ -260,7 +260,7 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
     <div class="card"><h2>Data</h2>
       <p><b>American Community Survey</b> 5-year estimates, <span id="acsSpan"></span>, at the tract level, identical tables for both sites. Sentinel values for suppressed estimates are treated as missing. Medians cannot be summed, so median household income and median year built are shown as household-weighted averages of tract medians and labeled as such.</p>
       <p><b>CDC PLACES</b>, 2025 release (BRFSS <span id="placesYears"></span>), model-based crude prevalence among adults 18+. These are small-area estimates, not surveys of these specific residents, and are aggregated here by adult population for each site.</p>
-      <p><b>Schools</b> are named school features from OpenStreetMap within about a mile of the proposed yard, measured from the feature's center to the yard boundary; the list is a floor, not a complete inventory of sensitive uses.</p>
+      <p><b>Schools</b> are named school features from OpenStreetMap within about a mile of the proposed yard, measured from the feature's center to the yard boundary; the list is a floor, not a complete inventory of sensitive uses. <b>Enrollment</b> for district and charter schools is <b>student_count_total</b> from Chicago Public Schools' School Profile Information for 2024–25, matched to each mapped school by location; private and parochial figures are the most recent published counts for each school, so the two sets are not from the same school year. Enrollment counts students registered, not people present at a given hour, and excludes staff. St. Barbara Elementary (closed 2025) and one day-care center are not included.</p>
       <p><b>Geography</b> from Census TIGERweb (2020 tracts and blocks with 2020 counts). Basemap from OpenStreetMap contributors.</p></div>
     <div class="card"><h2>What this cannot tell you</h2>
       <p>EPA's EJScreen, the usual source for existing pollution burden and traffic proximity, was taken offline in 2025 and is not included. Health prevalence here describes the population's baseline vulnerability, not an effect of the yard.</p>
@@ -283,7 +283,7 @@ const fmtInt = n => n==null||isNaN(n) ? '—' : Math.round(n).toLocaleString('en
 const fmtPct = (n,d=1) => n==null||isNaN(n) ? '—' : n.toFixed(d) + '%';
 const fmtUSD = n => n==null||isNaN(n) ? '—' : '$' + Math.round(n).toLocaleString('en-US');
 const BIN = D.meta.bin_ft;
-const SCHOOLS_DATA=[["James Ward Elementary School", 469, 4838, 646, 2253], ["Mark Sheridan Magnet School", 667, 4784, -853, 2384], ["Minnie Miñoso Academy", 817, 9748, -847, -2632], ["Saint Jerome School", 825, 5350, 1010, 1786], ["Saint Therese Chinese Catholic School", 827, 2386, 972, 4827], ["Air Force Academy High School", 840, 10593, 1124, -3482], ["John C. Haines Elementary School", 867, 2730, 1019, 4477], ["Healy Elementary School", 998, 6476, -929, 678], ["Santa Lucia School", 1117, 6599, 1325, 572], ["Bridgeport Catholic Academy", 1478, 11100, -1431, -3923], ["Hendricks Elementary School", 2156, 14921, 885, -7838], ["National Teachers Academy", 2161, 2917, 2301, 5097], ["John B. Drake Elementary School", 2226, 5455, 2407, 2100], ["Perspectives Rodney D. Joslin High School", 2601, 2245, 2426, 6854], ["Bronzeville Classical School", 2626, 13678, 2863, -6340], ["Chicago Kids Klub", 2758, 15319, 1622, -8185], ["Walsh Elementary School", 2843, 2937, -2700, 6325], ["Perspectives/IIT Math & Science Academy", 3168, 11046, 3452, -3474], ["De La Salle Institute", 3293, 9689, 3553, -2005], ["Ray Graham Training Center High School", 3324, 4225, 3477, 4462], ["Armour Elementary School", 3338, 8807, -3360, -1017], ["Saint Gabriel School", 3652, 16281, -997, -9176], ["Saint Barbara Grammar School", 3796, 6740, -3966, 1721], ["Ida B. Wells Elementary School", 4321, 11875, 4615, -3937], ["Wendell Phillips Academy High School", 4514, 12615, 4808, -4659], ["Holden Elementary School", 4587, 8230, -4514, 281], ["Jungman Elementary School", 4659, 4263, -4115, 7700], ["Chicago Military Academy", 4782, 10845, 5052, -2607], ["Pershing Elementary School", 4819, 9107, 5049, -609], ["Dunbar High School", 5075, 7982, 5275, 948]];
+const SCHOOLS_DATA=[["James Ward Elementary School", 469, 4838, 646, 2253, 502], ["Mark Sheridan Magnet School", 667, 4784, -853, 2384, 528], ["Minnie Miñoso Academy", 817, 9748, -847, -2632, 309], ["Saint Jerome School", 825, 5350, 1010, 1786, 132], ["Saint Therese Chinese Catholic School", 827, 2386, 972, 4827, 294], ["Air Force Academy High School", 840, 10593, 1124, -3482, 130], ["John C. Haines Elementary School", 867, 2730, 1019, 4477, 460], ["Healy Elementary School", 998, 6476, -929, 678, 1196], ["Santa Lucia School", 1117, 6599, 1325, 572, 80], ["Bridgeport Catholic Academy", 1478, 11100, -1431, -3923, 290], ["Hendricks Elementary School", 2156, 14921, 885, -7838, 221], ["National Teachers Academy", 2161, 2917, 2301, 5097, 802], ["John B. Drake Elementary School", 2226, 5455, 2407, 2100, 309], ["Perspectives Rodney D. Joslin High School", 2601, 2245, 2426, 6854, 315], ["Bronzeville Classical School", 2626, 13678, 2863, -6340, 455], ["Walsh Elementary School", 2843, 2937, -2700, 6325, 265], ["Perspectives/IIT Math & Science Academy", 3168, 11046, 3452, -3474, 396], ["De La Salle Institute", 3293, 9689, 3553, -2005, 699], ["Ray Graham Training Center High School", 3324, 4225, 3477, 4462, 257], ["Armour Elementary School", 3338, 8807, -3360, -1017, 257], ["Saint Gabriel School", 3652, 16281, -997, -9176, 184], ["Ida B. Wells Elementary School", 4321, 11875, 4615, -3937, 299], ["Wendell Phillips Academy High School", 4514, 12615, 4808, -4659, 395], ["Holden Elementary School", 4587, 8230, -4514, 281, 412], ["Jungman Elementary School", 4659, 4263, -4115, 7700, 309], ["Chicago Military Academy", 4782, 10845, 5052, -2607, 199], ["Pershing Elementary School", 4819, 9107, 5049, -609, 438], ["Dunbar High School", 5075, 7982, 5275, 948, 329]];
 
 // ---------- metric definitions ----------
 const U18 = ['m_u5','m_5_9','m_10_14','m_15_17','f_u5','f_5_9','f_10_14','f_15_17'];
@@ -459,11 +459,13 @@ function renderSensitive(){
   const ft=state.ft; const SCHOOLS=SCHOOLS_DATA;
   const schoolsA=SCHOOLS.filter(s=>s[1]<=ft).length, schoolsB=SCHOOLS.filter(s=>s[2]<=ft).length;
   const worse=(a,b)=>a>b?' worse':'';
-  const diff=(a,b)=>{ const d=a-b; return d===0?'same as the existing site':`<b>${d>0?'▲':'▼'} ${Math.abs(d)} ${d>0?'more':'fewer'}</b> than the existing site`; };
-  $('#sensTiles').innerHTML=`<div class="tile${worse(schoolsA,schoolsB)}"><div class="v num">${schoolsA}</div><div class="l">schools within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(schoolsA,schoolsB)}<span class="ex">existing site: ${schoolsB}</span></div></div>`;
+  const diff=(a,b)=>{ const d=a-b; return d===0?'same as the existing site':`<b>${d>0?'▲':'▼'} ${fmtInt(Math.abs(d))} ${d>0?'more':'fewer'}</b> than the existing site`; };
+  const studentsA=SCHOOLS.filter(s=>s[1]<=ft).reduce((t,s)=>t+s[5],0), studentsB=SCHOOLS.filter(s=>s[2]<=ft).reduce((t,s)=>t+s[5],0);
+  $('#sensTiles').innerHTML=`<div class="tile${worse(studentsA,studentsB)}"><div class="v num">${fmtInt(studentsA)}</div><div class="l">students enrolled within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(studentsA,studentsB)}<span class="ex">existing site: ${fmtInt(studentsB)}</span></div></div>
+   <div class="tile${worse(schoolsA,schoolsB)}"><div class="v num">${schoolsA}</div><div class="l">schools within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(schoolsA,schoolsB)}<span class="ex">existing site: ${schoolsB}</span></div></div>`;
   const list=SCHOOLS.filter(s=>s[1]<=Math.max(ft,2640)).sort((a,b)=>a[1]-b[1]);
-  let html='<thead><tr><th>School</th><th class="r">Distance to proposed yard</th></tr></thead><tbody>';
-  for(const s of list){ const fa=s[1]<=ft; html+=`<tr><td>${s[0]}</td><td class="r num" style="${fa?'color:var(--alert);font-weight:600':''}">${fmtInt(s[1])} ft${fa?' ●':''}</td></tr>`; }
+  let html='<thead><tr><th>School</th><th class="r">Students enrolled</th><th class="r">Distance to proposed yard</th></tr></thead><tbody>';
+  for(const s of list){ const fa=s[1]<=ft; const em=fa?'color:var(--alert);font-weight:600':''; html+=`<tr><td>${s[0]}</td><td class="r num" style="${em}">${fmtInt(s[5])}</td><td class="r num" style="${em}">${fmtInt(s[1])} ft${fa?' ●':''}</td></tr>`; }
   $('#sensTable').innerHTML=html+'</tbody>';
 }
 function renderTracts(agg){
@@ -595,8 +597,8 @@ function showTip(t,e){ const w=weightOf(t,'a'); const a=t.acs||{}; const edu = a
   tip.innerHTML=`<b>${t.name}</b><div class="kv"><span>Distance to yard</span><span class="num">${t.dist===0?'adjoins':fmtInt(t.dist)+' ft'}</span><span>Weight in cohort</span><span class="num">${w?Math.round(w*100)+'%':'not included'}</span><span>Residents (ACS)</span><span class="num">${fmtInt(a.pop&&a.pop[0])}</span><span>Median HH income</span><span class="num">${fmtUSD(a.med_hh_income&&a.med_hh_income[0])}</span><span>No HS diploma</span><span class="num">${fmtPct(edu)}</span><span>Adult asthma</span><span class="num">${fmtPct(t.places&&t.places.CASTHMA&&t.places.CASTHMA[0])}</span></div>`; tip.style.display='block'; moveTip(e); }
 function moveTip(e){ const x=e.clientX+14, y=e.clientY+14; tip.style.left=Math.min(x, window.innerWidth-280)+'px'; tip.style.top=Math.min(y, window.innerHeight-160)+'px'; }
 function hideTip(){ tip.style.display='none'; }
-function showSchoolTip(sc,e){ const inBand = sc[1] <= state.ft;
-  tip.innerHTML=`<b>${sc[0]}</b><div class="kv"><span>Distance to proposed yard</span><span class="num">${fmtInt(sc[1])} ft</span><span>Inside the band</span><span class="num">${inBand?'yes':'no'}</span></div>`;
+function showSchoolTip(sc,e){
+  tip.innerHTML=`<b>${sc[0]}</b><div class="kv"><span>Students enrolled</span><span class="num">${fmtInt(sc[5])}</span><span>Distance to proposed yard</span><span class="num">${fmtInt(sc[1])} ft</span></div>`;
   tip.style.display='block'; moveTip(e); }
 
 // ---------- copy ----------
