@@ -62,12 +62,13 @@ header .vint{font-family:var(--font-display);font-weight:600;font-size:13px;lett
 @media (max-width:900px){.work{grid-template-columns:1fr}}
 .mapwrap{position:sticky;top:12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 @media (max-width:900px){.mapwrap{position:static}}
-.mapwrap svg{display:block;width:100%;height:min(78vh,760px);min-height:380px;touch-action:none;cursor:grab;background:var(--paper-2)}
-.mapwrap svg.dragging{cursor:grabbing}
+.mapwrap>svg{display:block;width:100%;height:min(78vh,760px);min-height:380px;touch-action:none;cursor:grab;background:var(--paper-2)}
+.mapwrap>svg.dragging{cursor:grabbing}
+.legend svg{flex:none;width:22px;height:14px}
 .maptools{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px}
 .maptools button{width:32px;height:32px;border:1px solid var(--line-2);background:var(--panel);border-radius:4px;cursor:pointer;font-size:16px;line-height:1;display:grid;place-items:center;color:var(--ink)}
 .maptools button:hover{background:var(--paper-2)}
-.legend{position:absolute;left:10px;bottom:10px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font-size:12px;display:grid;gap:5px;backdrop-filter:blur(3px)}
+.legend{pointer-events:none;position:absolute;left:10px;bottom:10px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font-size:12px;display:grid;gap:5px;backdrop-filter:blur(3px)}
 .legend .row{display:flex;align-items:center;gap:8px}
 .legend .sw{width:22px;height:12px;border-radius:2px;flex:none}
 .scalebar{position:absolute;right:10px;bottom:10px;font-size:11.5px;color:var(--ink-2);background:color-mix(in srgb,var(--panel) 88%,transparent);padding:4px 8px;border:1px solid var(--line);border-radius:4px}
@@ -190,6 +191,7 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
       <div class="row"><span class="sw" style="background:var(--accent);opacity:.18"></span>Distance band</div>
       <div class="row"><span class="sw" style="background:var(--accent);opacity:.3;border:1px solid var(--accent)"></span>Tract in cohort (darker = higher weight)</div>
       <div class="row"><span class="sw" style="background:var(--yard-other);border:1px solid var(--line-2)"></span>Other rail yards</div>
+      <div class="row"><svg width="22" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><g fill="none" stroke="var(--alert)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 5h6c1.4 0 2.5 1.1 2.5 2.5c0-1.4 1.1-2.5 2.5-2.5h6v12.5h-6c-1.4 0-2.5 1.1-2.5 2.5c0-1.4-1.1-2.5-2.5-2.5h-6z"/><path d="M12 7.5V20"/></g></svg>School (red = inside the band)</div>
     </div>
     <div class="scalebar" id="scalebar"><span id="scaletxt">1,000 ft</span><i id="scalebarline"></i></div>
   </div>
@@ -272,7 +274,7 @@ const fmtInt = n => n==null||isNaN(n) ? '—' : Math.round(n).toLocaleString('en
 const fmtPct = (n,d=1) => n==null||isNaN(n) ? '—' : n.toFixed(d) + '%';
 const fmtUSD = n => n==null||isNaN(n) ? '—' : '$' + Math.round(n).toLocaleString('en-US');
 const BIN = D.meta.bin_ft;
-const SENSITIVE=[["James Ward Elementary School", "school", 469, 4838], ["Mark Sheridan Magnet School", "school", 667, 4784], ["Minnie Miñoso Academy", "school", 817, 9748], ["Saint Jerome School", "school", 825, 5350], ["Saint Therese Chinese Catholic School", "school", 827, 2386], ["Air Force Academy High School", "school", 840, 10593], ["John C. Haines Elementary School", "school", 867, 2730], ["Healy Elementary School", "school", 998, 6476], ["Santa Lucia School", "school", 1117, 6599], ["Bridgeport Catholic Academy", "school", 1478, 11100], ["Hendricks Elementary School", "school", 2156, 14921], ["National Teachers Academy", "school", 2161, 2917], ["John B. Drake Elementary School", "school", 2226, 5455], ["Perspectives Rodney D. Joslin High School", "school", 2601, 2245], ["Bronzeville Classical School", "school", 2626, 13678], ["Chicago Kids Klub", "school", 2758, 15319], ["Walsh Elementary School", "school", 2843, 2937], ["Perspectives/IIT Math & Science Academy", "school", 3168, 11046], ["De La Salle Institute", "school", 3293, 9689], ["Ray Graham Training Center High School", "school", 3324, 4225], ["Armour Elementary School", "school", 3338, 8807], ["Insight Hospital & Medical Center", "hospital", 3615, 5193], ["Saint Gabriel School", "school", 3652, 16281], ["Saint Barbara Grammar School", "school", 3796, 6740], ["Jungman Elementary School", "school", 4659, 4263], ["Ida B. Wells Elementary School", "school", 4321, 11875], ["Wendell Phillips Academy High School", "school", 4514, 12615], ["Holden Elementary School", "school", 4587, 8230], ["Chicago Military Academy", "school", 4782, 10845], ["Pershing Elementary School", "school", 4819, 9107], ["Dunbar High School", "school", 5075, 7982]];
+const SCHOOLS_DATA=[["James Ward Elementary School", 469, 4838, 646, 2253], ["Mark Sheridan Magnet School", 667, 4784, -853, 2384], ["Minnie Miñoso Academy", 817, 9748, -847, -2632], ["Saint Jerome School", 825, 5350, 1010, 1786], ["Saint Therese Chinese Catholic School", 827, 2386, 972, 4827], ["Air Force Academy High School", 840, 10593, 1124, -3482], ["John C. Haines Elementary School", 867, 2730, 1019, 4477], ["Healy Elementary School", 998, 6476, -929, 678], ["Santa Lucia School", 1117, 6599, 1325, 572], ["Bridgeport Catholic Academy", 1478, 11100, -1431, -3923], ["Hendricks Elementary School", 2156, 14921, 885, -7838], ["National Teachers Academy", 2161, 2917, 2301, 5097], ["John B. Drake Elementary School", 2226, 5455, 2407, 2100], ["Perspectives Rodney D. Joslin High School", 2601, 2245, 2426, 6854], ["Bronzeville Classical School", 2626, 13678, 2863, -6340], ["Chicago Kids Klub", 2758, 15319, 1622, -8185], ["Walsh Elementary School", 2843, 2937, -2700, 6325], ["Perspectives/IIT Math & Science Academy", 3168, 11046, 3452, -3474], ["De La Salle Institute", 3293, 9689, 3553, -2005], ["Ray Graham Training Center High School", 3324, 4225, 3477, 4462], ["Armour Elementary School", 3338, 8807, -3360, -1017], ["Saint Gabriel School", 3652, 16281, -997, -9176], ["Saint Barbara Grammar School", 3796, 6740, -3966, 1721], ["Ida B. Wells Elementary School", 4321, 11875, 4615, -3937], ["Wendell Phillips Academy High School", 4514, 12615, 4808, -4659], ["Holden Elementary School", 4587, 8230, -4514, 281], ["Jungman Elementary School", 4659, 4263, -4115, 7700], ["Chicago Military Academy", 4782, 10845, 5052, -2607], ["Pershing Elementary School", 4819, 9107, 5049, -609], ["Dunbar High School", 5075, 7982, 5275, 948]];
 
 // ---------- metric definitions ----------
 const U18 = ['m_u5','m_5_9','m_10_14','m_15_17','f_u5','f_5_9','f_10_14','f_15_17'];
@@ -445,14 +447,14 @@ function renderCompare(agg){
   $('#groups').querySelectorAll('th.sortable').forEach(h=>h.addEventListener('click',()=>{ const c=h.dataset.col; if(state.sort.col===c) state.sort.dir*=-1; else state.sort={col:c, dir:(c==='measure'?1:-1)}; renderCompare(lastAgg); }));
 }
 function renderSensitive(){
-  const ft=state.ft; const SCHOOLS=SENSITIVE.filter(s=>s[1]!=='hospital');
-  const schoolsA=SCHOOLS.filter(s=>s[2]<=ft).length, schoolsB=SCHOOLS.filter(s=>s[3]<=ft).length;
+  const ft=state.ft; const SCHOOLS=SCHOOLS_DATA;
+  const schoolsA=SCHOOLS.filter(s=>s[1]<=ft).length, schoolsB=SCHOOLS.filter(s=>s[2]<=ft).length;
   const worse=(a,b)=>a>b?' worse':'';
   const diff=(a,b)=>{ const d=a-b; return d===0?'same as the existing site':`<b>${d>0?'▲':'▼'} ${Math.abs(d)} ${d>0?'more':'fewer'}</b> than the existing site`; };
   $('#sensTiles').innerHTML=`<div class="tile${worse(schoolsA,schoolsB)}"><div class="v num">${schoolsA}</div><div class="l">schools within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(schoolsA,schoolsB)}<span class="ex">existing site: ${schoolsB}</span></div></div>`;
-  const list=SCHOOLS.filter(s=>s[2]<=Math.max(ft,2640)).sort((a,b)=>a[2]-b[2]);
+  const list=SCHOOLS.filter(s=>s[1]<=Math.max(ft,2640)).sort((a,b)=>a[1]-b[1]);
   let html='<thead><tr><th>School</th><th class="r">Distance to proposed yard</th></tr></thead><tbody>';
-  for(const s of list){ const fa=s[2]<=ft; html+=`<tr><td>${s[0]}</td><td class="r num" style="${fa?'color:var(--alert);font-weight:600':''}">${fmtInt(s[2])} ft${fa?' ●':''}</td></tr>`; }
+  for(const s of list){ const fa=s[1]<=ft; html+=`<tr><td>${s[0]}</td><td class="r num" style="${fa?'color:var(--alert);font-weight:600':''}">${fmtInt(s[1])} ft${fa?' ●':''}</td></tr>`; }
   $('#sensTable').innerHTML=html+'</tbody>';
 }
 function renderTracts(agg){
@@ -514,13 +516,41 @@ for(const f of B.roads) if(f.n && f.k!=='minor'){ const len=segLen(f.c); if(!byN
 function segLen(c){let L=0;for(let i=1;i<c.length;i++)L+=Math.hypot(c[i][0]-c[i-1][0],c[i][1]-c[i-1][1]);return L;}
 function midInfo(c){ const half=segLen(c)/2; let acc=0; for(let i=1;i<c.length;i++){ const d=Math.hypot(c[i][0]-c[i-1][0],c[i][1]-c[i-1][1]); if(acc+d>=half){ const t=(half-acc)/d; const x=c[i-1][0]+t*(c[i][0]-c[i-1][0]), y=c[i-1][1]+t*(c[i][1]-c[i-1][1]); let ang=Math.atan2(-(c[i][1]-c[i-1][1]),c[i][0]-c[i-1][0])*180/Math.PI; if(ang>90||ang<-90) ang+=180; return {x,y,ang}; } acc+=d; } return null; }
 Object.values(byName).sort((a,b)=>b.len-a.len).slice(0,20).forEach(({f})=>{ const m=midInfo(f.c); if(!m) return; const t=el('text',{x:m.x,y:-m.y,'data-px':10.5,'font-size':95,fill:'var(--ink-2)','text-anchor':'middle',transform:`rotate(${m.ang.toFixed(1)} ${m.x} ${-m.y})`,dy:'-0.35em','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22,'stroke-linejoin':'round'},gLabels); t.textContent=f.n; });
-for(const f of B.parks) if(f.n && f.k==='stadium'){ const c=centroid(f.c); const t=el('text',{x:c[0],y:-c[1],'data-px':12,'font-size':105,'font-weight':600,fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22},gLabels); t.textContent=f.n; }
-for(const f of B.water) if(f.n && !f.poly && segLen(f.c)>2500){ const m=midInfo(f.c); if(m){ const t=el('text',{x:m.x,y:-m.y,'data-px':11,'font-size':95,'font-style':'italic',fill:'var(--city)','text-anchor':'middle',transform:`rotate(${m.ang.toFixed(1)} ${m.x} ${-m.y})`,dy:'-0.3em','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':20},gLabels); t.textContent=f.n; } }
+for(const f of B.parks) if(f.n && f.k==='stadium' && /Rate Field/i.test(f.n)){ const c=centroid(f.c); const t=el('text',{x:c[0],y:-c[1],'data-px':12,'font-size':105,'font-weight':600,fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22},gLabels); t.textContent=f.n; }
 const siteC=centroid(D.yard); { const t=el('text',{x:siteC[0]+260,y:-siteC[1],'data-px':13,'font-size':115,'font-weight':600,'font-family':'Barlow Condensed, sans-serif',fill:'var(--ink)','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':26},gLabels); t.textContent='UP Canal Street Yard'; }
 const tractLabelG=el('g',{},gLabels);
+// ---------- school markers (open-book glyph) ----------
+const BOOK='M3.5 5h6c1.4 0 2.5 1.1 2.5 2.5c0-1.4 1.1-2.5 2.5-2.5h6v12.5h-6c-1.4 0-2.5 1.1-2.5 2.5c0-1.4-1.1-2.5-2.5-2.5h-6z';
+const BOOK_SPINE='M12 7.5V20';
+const gSchools=el('g',{},gLabels.parentNode);
+gLabels.parentNode.insertBefore(gSchools, gLabels);
+const schoolEls=SCHOOLS_DATA.map(sc=>{
+  const g=el('g',{class:'school','data-name':sc[0],style:'cursor:default'},gSchools);
+  el('circle',{cx:0,cy:0,r:9,fill:'transparent'},g);              // hit target
+  const glyph=el('g',{'stroke-width':2,fill:'none','stroke-linejoin':'round','stroke-linecap':'round','transform':'translate(-12,-12.5)'},g);
+  el('path',{d:BOOK,stroke:'var(--paper-2)','stroke-width':5.5},glyph);   // halo for contrast
+  el('path',{d:BOOK_SPINE,stroke:'var(--paper-2)','stroke-width':5.5},glyph);
+  const p1=el('path',{d:BOOK},glyph), p2=el('path',{d:BOOK_SPINE},glyph);
+  g.addEventListener('pointerenter',e=>showSchoolTip(sc,e));
+  g.addEventListener('pointermove',moveTip);
+  g.addEventListener('pointerleave',hideTip);
+  return {g,p1,p2,sc};
+});
+function scaleSchools(){ const s=ftPerPx(); const k=s*1.12;     // glyph ≈ 20 px tall on screen at any zoom
+  for(const {g,sc} of schoolEls) g.setAttribute('transform',`translate(${sc[3]},${-sc[4]}) scale(${k.toFixed(3)})`);
+}
+function renderSchools(){
+  for(const {g,p1,p2,sc} of schoolEls){
+    const inBand = sc[1] <= state.ft;
+    const col = inBand ? 'var(--alert)' : 'var(--ink-3)';
+    p1.setAttribute('stroke',col); p2.setAttribute('stroke',col);
+    g.setAttribute('opacity', inBand ? 1 : .55);
+  }
+  scaleSchools();
+}
 function centroid(c){ let a=0,x=0,y=0; for(let i=0;i<c.length;i++){ const j=(i+1)%c.length; const f=c[i][0]*c[j][1]-c[j][0]*c[i][1]; a+=f; x+=(c[i][0]+c[j][0])*f; y+=(c[i][1]+c[j][1])*f; } a*=.5; if(Math.abs(a)<1) return c[0]; return [x/(6*a),y/(6*a)]; }
 
-function applyView(){ svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`); updateScale(); scaleLabels(); }
+function applyView(){ svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`); updateScale(); scaleLabels(); if(typeof scaleSchools==='function') scaleSchools(); }
 function ftPerPx(){ const r=svg.getBoundingClientRect(); return Math.max(view.w/r.width, view.h/r.height); }
 function scaleLabels(){ const s=ftPerPx(); gLabels.querySelectorAll('text[data-px]').forEach(t=>{ const px=+t.dataset.px; t.setAttribute('font-size',(px*s).toFixed(0)); t.setAttribute('stroke-width',(px*s*0.22).toFixed(0)); }); }
 function updateScale(){ const r=svg.getBoundingClientRect(); const ftPerPx=Math.max(view.w/r.width, view.h/r.height); const target=140; let ft=[100,250,500,1000,2640,5280].reduce((b,v)=>Math.abs(v/ftPerPx-target)<Math.abs(b/ftPerPx-target)?v:b,500); $('#scaletxt').textContent = ft===5280?'1 mile':ft===2640?'½ mile':fmtInt(ft)+' ft'; $('#scalebarline').style.width=(ft/ftPerPx)+'px'; }
@@ -556,6 +586,9 @@ function showTip(t,e){ const w=weightOf(t,'a'); const a=t.acs||{}; const edu = a
   tip.innerHTML=`<b>${t.name}</b><div class="kv"><span>Distance to yard</span><span class="num">${t.dist===0?'adjoins':fmtInt(t.dist)+' ft'}</span><span>Weight in cohort</span><span class="num">${w?Math.round(w*100)+'%':'not included'}</span><span>Residents (ACS)</span><span class="num">${fmtInt(a.pop&&a.pop[0])}</span><span>Median HH income</span><span class="num">${fmtUSD(a.med_hh_income&&a.med_hh_income[0])}</span><span>No HS diploma</span><span class="num">${fmtPct(edu)}</span><span>Adult asthma</span><span class="num">${fmtPct(t.places&&t.places.CASTHMA&&t.places.CASTHMA[0])}</span></div>`; tip.style.display='block'; moveTip(e); }
 function moveTip(e){ const x=e.clientX+14, y=e.clientY+14; tip.style.left=Math.min(x, window.innerWidth-280)+'px'; tip.style.top=Math.min(y, window.innerHeight-160)+'px'; }
 function hideTip(){ tip.style.display='none'; }
+function showSchoolTip(sc,e){ const inBand = sc[1] <= state.ft;
+  tip.innerHTML=`<b>${sc[0]}</b><div class="kv"><span>Distance to proposed yard</span><span class="num">${fmtInt(sc[1])} ft</span><span>Inside the band</span><span class="num">${inBand?'yes':'no'}</span></div>`;
+  tip.style.display='block'; moveTip(e); }
 
 // ---------- copy ----------
 let lastAgg=null;
@@ -577,7 +610,7 @@ function updateInner(){
   $('#distBig').textContent=fmtInt(state.ft); $('#distMi').textContent=state.ft?`(${(state.ft/5280).toFixed(2)} mi)`:'';
   $('#modeHint').textContent=MODE_HINT[state.mode];
   const agg=aggregate(); lastAgg=agg;
-  renderTiles(agg); $('#sentence').textContent=sentence(agg); renderCompare(agg); renderSensitive(); renderTracts(agg); renderMap(agg);
+  renderTiles(agg); $('#sentence').textContent=sentence(agg); renderCompare(agg); renderSensitive(); renderSchools(); renderTracts(agg); renderMap(agg);
 }
 $('#vintage').innerHTML=`ACS 5-year ${D.meta.acs_span} · CDC PLACES 2025 release<br>2020 Census tracts and blocks · OpenStreetMap<br>Built ${D.meta.built}`;
 $('#yardAcres').textContent=D.meta.yard_acres; $('#yardBAcres').textContent=D.meta.yard_b_acres; $('#acsSpan').textContent=D.meta.acs_span; $('#placesYears').textContent=D.meta.places_years.join('–');
