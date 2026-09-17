@@ -225,18 +225,18 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
   </div>
 </div>
 
-<section class="section" id="compare">
-  <h2>Proposed site compared with the existing 14th Street site</h2>
-  <p class="lede">Each row aggregates the tracts within the chosen distance of a site into a single figure (counts summed, rates recomputed from the summed numerators and denominators). The same distance and the same resident-weighting are applied to both yards, so the two sets of neighbors can be compared like for like. Margins of error are shown where the Census publishes them.</p>
-  <div class="key"><span><i style="background:var(--accent)"></i>Near proposed site (Canal Street Yard)</span><span><i style="background:var(--exist)"></i>Near existing site (14th Street yard)</span><span>× = proposed-site figure relative to the existing site</span></div>
-  <div id="groups"></div>
-</section>
-
 <section class="section" id="sensitive">
   <h2>Schools near the proposed yard</h2>
   <p class="lede">Named schools mapped in OpenStreetMap, measured from the building or grounds to Amtrak's proposed maintenance facility, with enrollment from each school's district or published figure. This is not inclusive of licensed day-care centers.</p>
   <div class="tiles" style="margin-top:14px;max-width:560px;grid-template-columns:repeat(2,1fr)" id="sensTiles"></div>
   <div class="grp" style="margin-top:16px"><div class="tablewrap"><table class="tl" id="sensTable"></table></div></div>
+</section>
+
+<section class="section" id="compare">
+  <h2>Community profile near the proposed yard</h2>
+  <p class="lede">Each row aggregates the tracts within the chosen distance of a site into a single figure (counts summed, rates recomputed from the summed numerators and denominators). The same distance and the same resident-weighting are applied to both yards, so the two sets of neighbors can be compared like for like. Margins of error are shown where the Census publishes them.</p>
+  <div class="key"><span><i style="background:var(--accent)"></i>Near proposed site (Canal Street Yard)</span><span><i style="background:var(--exist)"></i>Near existing site (14th Street yard)</span><span>× = proposed-site figure relative to the existing site</span></div>
+  <div id="groups"></div>
 </section>
 
 <section class="section" id="tracts">
@@ -265,6 +265,7 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
     <div class="card"><h2>What this cannot tell you</h2>
       <p>EPA's EJScreen, the usual source for existing pollution burden and traffic proximity, was taken offline in 2025 and is not included. Health prevalence here describes the population's baseline vulnerability, not an effect of the yard.</p>
       <p>ACS tract estimates carry wide margins of error, and the existing-site cohort is small, so its margins are especially wide; small differences between the two sites may not be meaningful. Where a figure's margin is large relative to the estimate, treat it as indicative.</p>
+      <p>Analysis and dashboard built by Matt Malec for Bridgeport Environmentalists.</p>
       <p>Reporting on the proposal: <a href="https://blockclubchicago.org/2026/08/21/bridgeport-residents-furious-about-amtrak-rail-yard-plans-and-fear-losing-the-white-sox/">Block Club Chicago</a>, <a href="https://abc7chicago.com/post/chicago-residents-bridgeport-chinatown-push-back-proposed-amtrak-maintenance-facility-railroad-shares-new-details/19782593/">ABC7</a>, <a href="https://chicagocitywire.com/what-amtrak-has-told-bridgeport-about-the-canal-street-yard-and-what-it-hasn-t">Chicago City Wire</a>.</p></div>
   </div>
 </section>
@@ -317,22 +318,12 @@ const GROUPS = [
  ]},
  {title:'Health and vulnerability', note:'CDC PLACES 2025 release · adults 18+ · modeled crude prevalence', rows:[
    {id:'CASTHMA', label:'Current asthma', kind:'places'},
-   {id:'COPD', label:'COPD', kind:'places'},
+   {id:'COPD', label:'COPD', kind:'places', sublabel:'chronic obstructive pulmonary disease'},
    {id:'CHD', label:'Coronary heart disease', kind:'places'},
-   {id:'STROKE', label:'Stroke', kind:'places'},
-   {id:'DIABETES', label:'Diabetes', kind:'places'},
    {id:'BPHIGH', label:'High blood pressure', kind:'places'},
    {id:'CANCER', label:'Cancer (excluding skin)', kind:'places'},
    {id:'GHLTH', label:'Fair or poor general health', kind:'places'},
-   {id:'PHLTH', label:'Frequent physical distress', kind:'places', sublabel:'14+ poor physical-health days a month'},
    {id:'DISABILITY', label:'Any disability', kind:'places'},
-   {id:'ACCESS2', label:'No health insurance, ages 18–64', kind:'places'},
-   {id:'CSMOKING', label:'Current smoking', kind:'places'},
-   {id:'OBESITY', label:'Obesity', kind:'places'},
-   {id:'LACKTRPT', label:'Lack of reliable transportation', kind:'places'},
-   {id:'FOODINSECU', label:'Food insecurity', kind:'places'},
-   {id:'HOUSINSECU', label:'Housing insecurity', kind:'places'},
-   {id:'CHECKUP', label:'Routine checkup in past year', kind:'places'},
  ]},
 ];
 
