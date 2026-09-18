@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-3D6V7GK2EW"></script>
 <script>
@@ -182,7 +187,8 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 .method .card h2{margin-bottom:8px}
 @media (prefers-reduced-motion:no-preference){.bar{transition:width .35s ease}}
 </style>
-
+</head>
+<body>
 <header>
   <div>
     <div class="eyebrow">Bridgeport · Armour Square · Chinatown &nbsp;—&nbsp; Chicago, Illinois</div>
@@ -271,7 +277,7 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
       <p><b>CDC PLACES</b>, 2025 release (BRFSS <span id="placesYears"></span>), model-based crude prevalence among adults 18+. These are small-area estimates, not surveys of these specific residents, and are aggregated here by adult population for each site.</p>
       <p><b>Schools</b> are named school features from OpenStreetMap within about a mile of the proposed yard, measured from the feature's center to the yard boundary; the list is a floor, not a complete inventory of sensitive uses. <b>Enrollment</b> for district and charter schools is <b>student_count_total</b> from Chicago Public Schools' School Profile Information for 2024–25, matched to each mapped school by location; private and parochial figures are the most recent published counts for each school, so the two sets are not from the same school year. Enrollment counts students registered, not people present at a given hour, and excludes staff. St. Barbara Elementary (closed 2025) and one day-care center are not included.</p>
       <p><b>Geography</b> from Census TIGERweb (2020 tracts and blocks with 2020 counts). Basemap from OpenStreetMap contributors.</p></div>
-    <div class="card"><h2>What this cannot tell you</h2>
+    <div class="card"><h2>Additional information</h2>
       <p>EPA's EJScreen, the usual source for existing pollution burden and traffic proximity, was taken offline in 2025 and is not included. Health prevalence here describes the population's baseline vulnerability, not an effect of the yard.</p>
       <p>ACS tract estimates carry wide margins of error, and the existing-site cohort is small, so its margins are especially wide; small differences between the two sites may not be meaningful. Where a figure's margin is large relative to the estimate, treat it as indicative.</p>
       <p>Analysis and dashboard built by Matt Malec for Bridgeport Environmentalists.</p>
@@ -286,6 +292,7 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 <script src="data.js"></script>
 <script>
 (function(){
+const LAST_UPDATED = '2026-09-18';   // bump on every published version
 const D = window.RAILYARD_DATA;
 if(!D){ document.addEventListener('DOMContentLoaded',()=>{ const b=document.createElement('div'); b.style.cssText='margin:16px auto;max-width:1320px;padding:12px 16px;border:2px solid #c8102e;color:#c8102e;font-weight:600'; b.textContent='data.js failed to load. Upload data.js next to index.html.'; document.querySelector('.work').before(b); }); throw new Error('data.js missing'); }
 if(!D.tracts[0] || D.tracts[0].dist_b==null){ setTimeout(()=>{ const b=document.createElement('div'); b.style.cssText='margin:16px auto;max-width:1320px;padding:12px 16px;border:2px solid #c8102e;color:#c8102e;font-weight:600'; b.textContent='data.js is an older version without the 14th Street yard data. Upload the current data.js next to index.html.'; document.querySelector('.work').before(b); },0); }
@@ -294,7 +301,7 @@ const fmtInt = n => n==null||isNaN(n) ? '—' : Math.round(n).toLocaleString('en
 const fmtPct = (n,d=1) => n==null||isNaN(n) ? '—' : n.toFixed(d) + '%';
 const fmtUSD = n => n==null||isNaN(n) ? '—' : '$' + Math.round(n).toLocaleString('en-US');
 const BIN = D.meta.bin_ft;
-const SCHOOLS_DATA=[["James Ward Elementary School", 469, 4838, 646, 2253, 502], ["Mark Sheridan Magnet School", 667, 4784, -853, 2384, 528], ["Minnie Miñoso Academy", 817, 9748, -847, -2632, 309], ["Saint Jerome School", 825, 5350, 1010, 1786, 132], ["Saint Therese Chinese Catholic School", 827, 2386, 972, 4827, 294], ["Air Force Academy High School", 840, 10593, 1124, -3482, 130], ["John C. Haines Elementary School", 867, 2730, 1019, 4477, 460], ["Healy Elementary School", 998, 6476, -929, 678, 1196], ["Santa Lucia School", 1117, 6599, 1325, 572, 80], ["Bridgeport Catholic Academy", 1478, 11100, -1431, -3923, 290], ["Hendricks Elementary School", 2156, 14921, 885, -7838, 221], ["National Teachers Academy", 2161, 2917, 2301, 5097, 802], ["John B. Drake Elementary School", 2226, 5455, 2407, 2100, 309], ["Perspectives Rodney D. Joslin High School", 2601, 2245, 2426, 6854, 315], ["Bronzeville Classical School", 2626, 13678, 2863, -6340, 455], ["Walsh Elementary School", 2843, 2937, -2700, 6325, 265], ["Perspectives/IIT Math & Science Academy", 3168, 11046, 3452, -3474, 396], ["De La Salle Institute", 3293, 9689, 3553, -2005, 699], ["Ray Graham Training Center High School", 3324, 4225, 3477, 4462, 257], ["Armour Elementary School", 3338, 8807, -3360, -1017, 257], ["Saint Gabriel School", 3652, 16281, -997, -9176, 184], ["Ida B. Wells Elementary School", 4321, 11875, 4615, -3937, 299], ["Wendell Phillips Academy High School", 4514, 12615, 4808, -4659, 395], ["Holden Elementary School", 4587, 8230, -4514, 281, 412], ["Jungman Elementary School", 4659, 4263, -4115, 7700, 309], ["Chicago Military Academy", 4782, 10845, 5052, -2607, 199], ["Pershing Elementary School", 4819, 9107, 5049, -609, 438], ["Dunbar High School", 5075, 7982, 5275, 948, 329]];
+const SCHOOLS_DATA=[["James Ward Elementary School", 469, 4838, 646, 2253, 502], ["Mark Sheridan Magnet School", 667, 4784, -853, 2384, 528], ["Minnie Miñoso Academy", 817, 9748, -847, -2632, 309], ["Saint Jerome School", 825, 5350, 1010, 1786, 132], ["Saint Therese Chinese Catholic School", 827, 2386, 972, 4827, 294], ["Air Force Academy High School", 840, 10593, 1124, -3482, 130], ["John C. Haines Elementary School", 867, 2730, 1019, 4477, 460], ["Healy Elementary School", 998, 6476, -929, 678, 1196], ["Santa Lucia School", 1117, 6599, 1325, 572, 80], ["Pui Tak Christian School", 1409, 2604, 1555, 4875, 116], ["Bridgeport Catholic Academy", 1478, 11100, -1431, -3923, 290], ["Hendricks Elementary School", 2156, 14921, 885, -7838, 221], ["National Teachers Academy", 2161, 2917, 2301, 5097, 802], ["John B. Drake Elementary School", 2226, 5455, 2407, 2100, 309], ["Perspectives Rodney D. Joslin High School", 2601, 2245, 2426, 6854, 315], ["Bronzeville Classical School", 2626, 13678, 2863, -6340, 455], ["Walsh Elementary School", 2843, 2937, -2700, 6325, 265], ["Perspectives/IIT Math & Science Academy", 3168, 11046, 3452, -3474, 396], ["De La Salle Institute", 3293, 9689, 3553, -2005, 699], ["Ray Graham Training Center High School", 3324, 4225, 3477, 4462, 257], ["Armour Elementary School", 3338, 8807, -3360, -1017, 257], ["Saint Gabriel School", 3652, 16281, -997, -9176, 184], ["Ida B. Wells Elementary School", 4321, 11875, 4615, -3937, 299], ["Wendell Phillips Academy High School", 4514, 12615, 4808, -4659, 395], ["Holden Elementary School", 4587, 8230, -4514, 281, 412], ["Jungman Elementary School", 4659, 4263, -4115, 7700, 309], ["Chicago Military Academy", 4782, 10845, 5052, -2607, 199], ["Pershing Elementary School", 4819, 9107, 5049, -609, 438], ["Dunbar High School", 5075, 7982, 5275, 948, 329]];
 
 // ---------- metric definitions ----------
 const U18 = ['m_u5','m_5_9','m_10_14','m_15_17','f_u5','f_5_9','f_10_14','f_15_17'];
@@ -623,9 +630,11 @@ function updateInner(){
   const agg=aggregate(); lastAgg=agg;
   renderTiles(agg); $('#sentence').textContent=sentence(agg); renderCompare(agg); renderSensitive(); renderSchools(); renderTracts(agg); renderMap(agg);
 }
-$('#vintage').innerHTML=`Built by Bridgeport Environmentalists<br>Last updated ${D.meta.updated||'2026-09-16'}`;
+$('#vintage').innerHTML=`Built by Bridgeport Environmentalists<br>Last updated ${LAST_UPDATED}`;
 $('#yardAcres').textContent=D.meta.yard_acres; $('#yardBAcres').textContent=D.meta.yard_b_acres; $('#acsSpan').textContent=D.meta.acs_span; $('#placesYears').textContent=D.meta.places_years.join('–');
 update(); fitBand();
 $('#dist').addEventListener('change',()=>fitBand());
 })();
 </script>
+</body>
+</html>
