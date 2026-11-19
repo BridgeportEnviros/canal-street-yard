@@ -14,43 +14,24 @@
 </script>
 <title>Canal Street Yard Proximity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap">
 <style>
 :root{
   color-scheme:light;
-  --paper:#f4f5f6; --paper-2:#e6e9eb; --panel:#ffffff; --line:#d5dadd; --line-2:#b4bcc1;
-  --ink:#27251f; --ink-2:#4f5257; --ink-3:#7c8287;
-  --accent:#27251f; --accent-2:#c4ced4; --accent-soft:rgba(39,37,31,.10);
-  --city:#5b7086; --city-soft:#c4ced4; --exist:#98a4ab;
-  --water:#c4ced4; --park:#dfe4e0; --road:#ffffff; --road-edge:#d5dadd; --major:#f7f7f5; --rail:#5f6368; --yard-other:#e1e4e6; --site:#27251f;
-  --alert:#c8102e; --alert-soft:rgba(200,16,46,.09);
-  --focus:#1c5cab;
-  --radius:3px;
-  --font-display:"Barlow Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
-  --font-body:"Barlow","Segoe UI",Roboto,sans-serif;
-  --font-mono:"Barlow Semi Condensed","Barlow","Segoe UI",sans-serif;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --paper:#111213; --paper-2:#1a1c1e; --panel:#1f2224; --line:#33373a; --line-2:#4a5054;
-    --ink:#f2f3f4; --ink-2:#c4ced4; --ink-3:#8b9399;
-    --accent:#f2f3f4; --accent-2:#4a5054; --accent-soft:rgba(242,243,244,.12);
-    --city:#8fa9c2; --city-soft:#2c3640; --exist:#6f7b83;
-    --water:#243038; --park:#212925; --road:#2a2e31; --road-edge:#17191b; --major:#3a3f43; --rail:#a2a9ae; --yard-other:#25292c; --site:#f2f3f4;
-    --alert:#ff5f6d; --alert-soft:rgba(255,95,109,.14);
-    --focus:#7fb0ff;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --paper:#111213; --paper-2:#1a1c1e; --panel:#1f2224; --line:#33373a; --line-2:#4a5054;
-  --ink:#f2f3f4; --ink-2:#c4ced4; --ink-3:#8b9399;
-  --accent:#f2f3f4; --accent-2:#4a5054; --accent-soft:rgba(242,243,244,.12);
-  --city:#8fa9c2; --city-soft:#2c3640; --exist:#6f7b83;
-  --water:#243038; --park:#212925; --road:#2a2e31; --road-edge:#17191b; --major:#3a3f43; --rail:#a2a9ae; --yard-other:#25292c; --site:#f2f3f4;
-  --alert:#ff5f6d; --alert-soft:rgba(255,95,109,.14);
-  --focus:#7fb0ff;
+  /* Bridgeport Enviros design system, tokens v3 (light only), mapped onto this page's variable names. Red (#c8102e, the page's original alert red) stays the color for negative metrics and the proposed site, at Matt's request */
+  --be-bg:#ffffff; --be-mint:#f3ffeb; --be-meadow:#ccf6a8; --be-ink:#212121; --be-ink-2:#55634d; --be-forest:#274e13; --be-deep:#1b370d;
+  --be-rule:#c9d3c3; --be-worse:#c8102e; --be-worse-soft:#fdeaed; --be-bad:#c8102e; --be-existing:#6f7f66;
+  --paper:var(--be-bg); --paper-2:var(--be-mint); --panel:#ffffff; --line:var(--be-rule); --line-2:#a9b8a0;
+  --ink:var(--be-ink); --ink-2:var(--be-ink-2); --ink-3:#66745e;
+  --accent:var(--be-forest); --accent-2:var(--be-meadow); --accent-soft:rgba(39,78,19,.10);
+  --city:var(--be-ink-2); --city-soft:#dfe8d8; --exist:var(--be-existing);
+  --water:#cfdde3; --park:#e3f3d6; --road:#ffffff; --road-edge:#d5dccf; --major:#f4f7f1; --rail:#5f6368; --yard-other:#e4e9df; --site:var(--be-bad);
+  --alert:var(--be-worse); --alert-soft:var(--be-worse-soft);
+  --focus:var(--be-deep);
+  --radius:4px; --radius-md:8px;
+  --font-display:Montserrat,"Arial Black",Arial,sans-serif;
+  --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  --font-mono:Arial,"Helvetica Neue",Helvetica,sans-serif;
 }
 *{box-sizing:border-box}
 html{background:var(--paper)}
@@ -191,6 +172,64 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
 .method .card p{margin:0 0 10px;font-size:14px;color:var(--ink-2)}
 .method .card p:last-child{margin-bottom:0}
 .method .card h2{margin-bottom:8px}
+@media (prefers-reduced-motion:no-preference){.bar{transition:width .35s ease}}
+
+/* ---- Bridgeport Enviros design system: component overrides (test copy) ---- */
+body{padding-inline:0;padding-block:0 var(--be-s12,48px);font-size:16px;line-height:1.5}
+.work,.section{padding-inline:max(clamp(16px,3vw,40px),calc((100% - 1320px)/2));max-width:none;box-sizing:border-box}
+.work{margin-top:32px}
+.section{margin-top:48px}
+a{color:var(--be-forest)}
+header{max-width:none;margin:0;background:var(--be-mint);border-bottom:1px solid var(--be-rule);padding:32px max(clamp(16px,3vw,40px),calc((100% - 1320px)/2));grid-template-columns:auto 1fr;align-items:center;gap:16px 24px}
+header::before{display:none}
+header .cred{order:-1;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:8px}
+.belogo img{width:64px;height:64px;border-radius:2px;transition:none}
+.belogo:hover img,.belogo:focus-visible img{transform:none}
+header .vint{font-family:var(--font-body);font-weight:400;font-size:12px;letter-spacing:0;text-transform:none;color:var(--be-ink-2);text-align:left;line-height:16px}
+.eyebrow{font-family:var(--font-body);font-weight:700;font-size:13px;line-height:16px;letter-spacing:.08em;text-transform:uppercase;color:var(--be-ink-2)}
+header h1{font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,44px);line-height:1.1;letter-spacing:0;text-transform:none;color:var(--be-forest);margin-top:8px}
+header .sub{color:var(--be-ink-2);font-size:16px;line-height:24px}
+@media (max-width:760px){header{grid-template-columns:1fr}.belogo img{width:48px;height:48px}}
+.section>h2,.fold summary h2{font-family:var(--font-body);font-weight:700;font-size:22px;line-height:28px;letter-spacing:.02em;text-transform:uppercase;color:var(--be-forest);text-align:center}
+.fold summary{justify-content:center;position:relative}
+.fold summary .chev{position:absolute;right:6px}
+.section>p.lede{margin-inline:auto;text-align:left}
+.card{border-radius:var(--radius);padding:24px}
+.card h2{font-family:var(--font-body);font-size:18px;line-height:24px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--be-forest)}
+.dist .big{font-family:var(--font-display);font-weight:800;color:var(--be-forest)}
+input[type=range]{accent-color:var(--be-deep)}
+.presets button,.seg button{border:1px solid var(--be-ink-2);background:var(--be-mint);color:var(--be-ink);border-radius:var(--radius);font-weight:700;font-size:14px;line-height:20px;padding:6px 12px}
+.presets button[aria-pressed=true],.seg button[aria-pressed=true]{background:var(--be-deep);color:#fff;border-color:var(--be-deep)}
+.actions button{background:var(--be-deep);color:#fff;border:1px solid var(--be-deep);border-radius:var(--radius);font-size:15px;line-height:20px;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px}
+.actions button:hover{background:var(--be-deep);filter:brightness(1.15)}
+.mapwrap{border-radius:var(--radius-md)}
+.maptools button{border-radius:var(--radius);border-color:var(--be-rule);color:var(--be-forest)}
+.maptools button:hover{background:var(--be-mint)}
+.legend,.scalebar{border-radius:var(--radius);backdrop-filter:none;background:var(--panel)}
+.tip{box-shadow:none;border-radius:var(--radius)}
+.tile{border-top:3px solid var(--be-forest);border-radius:var(--radius)}
+.tile .v{font-family:var(--font-display);font-weight:800;font-size:36px;line-height:40px;color:var(--be-forest)}
+.tile .l{color:var(--be-ink-2)}
+.tile.worse{border-top-color:var(--be-bad);background:var(--be-worse-soft)}
+.tile.worse .v{color:var(--be-worse)}
+.chip.up::before{content:"\25B2 ";font-size:.8em}
+.grp{border-radius:var(--radius)}
+.grp h3{font-family:var(--font-body);background:var(--be-deep);color:#fff;letter-spacing:.02em}
+.grp h3 small{color:var(--be-meadow)}
+.cmp th,.tl th{font-family:var(--font-body);background:var(--be-mint);color:var(--be-ink-2);font-size:12px;font-weight:700;letter-spacing:.08em;border-bottom:2px solid var(--be-forest)}
+.cmp tbody tr:hover,.tl tbody tr:hover{background:var(--be-mint)}
+.cmp th.sortable:hover{color:var(--be-forest)}
+.num,.cmp .num,.tl .num{font-family:var(--font-body);font-variant-numeric:tabular-nums;font-weight:400}
+.bar.co{background:var(--be-bad)}
+.bar.ci{background:var(--be-ink-2)}
+.bar.ex{background:var(--be-existing)}
+.key i[style*="--accent"]{background:var(--be-bad)!important}
+.chip{border-radius:var(--radius);font-family:var(--font-body)}
+.chip.up{color:var(--be-worse);border-color:var(--be-bad);background:var(--be-worse-soft)}
+.fold summary:hover h2{color:var(--be-deep)}
+.toast{background:var(--be-deep);color:#fff}
+.method{padding:24px;background:var(--be-mint);border-radius:var(--radius-md)}
+.method .card p{color:var(--be-ink-2)}
 @media (prefers-reduced-motion:no-preference){.bar{transition:width .35s ease}}
 </style>
 </head>
@@ -553,7 +592,7 @@ function segLen(c){let L=0;for(let i=1;i<c.length;i++)L+=Math.hypot(c[i][0]-c[i-
 function midInfo(c){ const half=segLen(c)/2; let acc=0; for(let i=1;i<c.length;i++){ const d=Math.hypot(c[i][0]-c[i-1][0],c[i][1]-c[i-1][1]); if(acc+d>=half){ const t=(half-acc)/d; const x=c[i-1][0]+t*(c[i][0]-c[i-1][0]), y=c[i-1][1]+t*(c[i][1]-c[i-1][1]); let ang=Math.atan2(-(c[i][1]-c[i-1][1]),c[i][0]-c[i-1][0])*180/Math.PI; if(ang>90||ang<-90) ang+=180; return {x,y,ang}; } acc+=d; } return null; }
 Object.values(byName).sort((a,b)=>b.len-a.len).slice(0,20).forEach(({f})=>{ const m=midInfo(f.c); if(!m) return; const t=el('text',{x:m.x,y:-m.y,'data-px':10.5,'font-size':95,fill:'var(--ink-2)','text-anchor':'middle',transform:`rotate(${m.ang.toFixed(1)} ${m.x} ${-m.y})`,dy:'-0.35em','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22,'stroke-linejoin':'round'},gLabels); t.textContent=f.n; });
 for(const f of B.parks) if(f.n && f.k==='stadium' && /Rate Field/i.test(f.n)){ const c=centroid(f.c); const t=el('text',{x:c[0],y:-c[1],'data-px':12,'font-size':105,'font-weight':600,fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22},gLabels); t.textContent=f.n; }
-const siteC=centroid(D.yard); { const t=el('text',{x:siteC[0]+260,y:-siteC[1],'data-px':13,'font-size':115,'font-weight':600,'font-family':'Barlow Condensed, sans-serif',fill:'var(--ink)','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':26},gLabels); t.textContent='UP Canal Street Yard'; }
+const siteC=centroid(D.yard); { const t=el('text',{x:siteC[0]+260,y:-siteC[1],'data-px':13,'font-size':115,'font-weight':600,'font-family':'Montserrat, Arial, sans-serif',fill:'var(--ink)','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':26},gLabels); t.textContent='UP Canal Street Yard'; }
 function renderChildcare(){
   const ft=state.ft, C=CHILDCARE_DATA;
   const worse=(a,b)=>a>b?' worse':'';
