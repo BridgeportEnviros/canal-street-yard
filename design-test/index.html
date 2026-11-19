@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3D6V7GK2EW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3D6V7GK2EW');
+</script>
+<title>Canal Street Yard Proximity (design test)</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  /* Bridgeport Enviros design system, tokens v3 (light only), mapped onto this page's variable names */
+  --be-bg:#ffffff; --be-mint:#f3ffeb; --be-meadow:#ccf6a8; --be-ink:#212121; --be-ink-2:#55634d; --be-forest:#274e13; --be-deep:#1b370d;
+  --be-rule:#c9d3c3; --be-worse:#a34700; --be-worse-soft:#fff1e3; --be-milkweed:#e47200; --be-existing:#6f7f66;
+  --paper:var(--be-bg); --paper-2:var(--be-mint); --panel:#ffffff; --line:var(--be-rule); --line-2:#a9b8a0;
+  --ink:var(--be-ink); --ink-2:var(--be-ink-2); --ink-3:#66745e;
+  --accent:var(--be-forest); --accent-2:var(--be-meadow); --accent-soft:rgba(39,78,19,.10);
+  --city:var(--be-ink-2); --city-soft:#dfe8d8; --exist:var(--be-existing);
+  --water:#cfdde3; --park:#e3f3d6; --road:#ffffff; --road-edge:#d5dccf; --major:#f4f7f1; --rail:#5f6368; --yard-other:#e4e9df; --site:var(--be-milkweed);
+  --alert:var(--be-worse); --alert-soft:var(--be-worse-soft);
+  --focus:var(--be-deep);
+  --radius:4px; --radius-md:8px;
+  --font-display:Montserrat,"Arial Black",Arial,sans-serif;
+  --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  --font-mono:Arial,"Helvetica Neue",Helvetica,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;padding-inline:clamp(16px,3vw,40px);padding-block:0 64px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0}
+a{color:var(--ink);text-decoration-color:var(--line-2)}
+.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:500}
+.eyebrow{font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+
+/* header */
+header{max-width:1320px;margin:0 auto;padding-block:24px 20px;border-bottom:4px solid var(--ink);display:grid;grid-template-columns:1fr auto;gap:18px 32px;align-items:end;position:relative}
+header::before{content:"";position:absolute;inset:0 0 0 0;background:repeating-linear-gradient(90deg,transparent 0 22px,color-mix(in srgb,var(--ink) 7%,transparent) 22px 23px);pointer-events:none;mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 85%)}
+header>*{position:relative}
+header h1{font-size:clamp(34px,4.6vw,58px);font-weight:800;letter-spacing:.005em;line-height:.98;text-transform:uppercase}
+header .sub{max-width:62ch;color:var(--ink-2);margin-top:8px}
+.cred{display:flex;align-items:flex-end;gap:14px;justify-content:flex-end}
+.belogo{display:block;flex:none;line-height:0;border-radius:3px;outline-offset:3px}
+.belogo img{display:block;width:72px;height:72px;border-radius:3px;transition:transform .15s ease}
+.belogo:hover img,.belogo:focus-visible img{transform:scale(1.04)}
+@media (max-width:760px){.cred{justify-content:flex-start;align-items:center}}
+header .vint{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);text-align:right;line-height:1.55}
+@media (max-width:760px){header{grid-template-columns:1fr}header .vint{text-align:left}}
+
+/* workspace */
+.work{max-width:1320px;margin:22px auto 0;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.9fr);gap:22px;align-items:start}
+@media (max-width:900px){.work{grid-template-columns:1fr}}
+.mapwrap{position:sticky;top:12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+@media (max-width:900px){.mapwrap{position:relative;top:auto}}
+.mapwrap>svg{display:block;width:100%;height:min(78vh,760px);min-height:380px;touch-action:none;cursor:grab;background:var(--paper-2)}
+.mapwrap>svg.dragging{cursor:grabbing}
+.legend svg{flex:none;width:22px;height:14px}
+.maptools{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px}
+.maptools button{width:32px;height:32px;border:1px solid var(--line-2);background:var(--panel);border-radius:4px;cursor:pointer;font-size:16px;line-height:1;display:grid;place-items:center;color:var(--ink)}
+.maptools button:hover{background:var(--paper-2)}
+.legend{pointer-events:none;position:absolute;left:10px;bottom:10px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font-size:12px;display:grid;gap:5px;backdrop-filter:blur(3px)}
+.legend .row{display:flex;align-items:center;gap:8px}
+.legend .ltog{pointer-events:auto;cursor:pointer;background:none;border:1px solid transparent;border-radius:3px;padding:2px 5px;margin:-3px -6px;font:inherit;color:inherit;text-align:left;transition:opacity .15s,background .15s}
+.legend .ltog:hover{border-color:var(--line-2)}
+.legend .ltog:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.legend .ltog[aria-pressed="true"]{background:var(--alert-soft);border-color:var(--alert);font-weight:600}
+.legend[data-focus] .ltog[aria-pressed="false"]{opacity:.45}
+.legend .lhint{font-size:11px;color:var(--ink-3);margin-top:1px}
+.legend .sw{width:22px;height:12px;border-radius:2px;flex:none}
+.scalebar{position:absolute;right:10px;bottom:10px;font-size:11.5px;color:var(--ink-2);background:color-mix(in srgb,var(--panel) 88%,transparent);padding:4px 8px;border:1px solid var(--line);border-radius:4px}
+.scalebar i{display:block;height:4px;border:2px solid var(--ink-2);border-top:none;margin-top:2px}
+.tip{position:fixed;pointer-events:none;z-index:20;background:var(--panel);color:var(--ink);border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;font-size:12.5px;line-height:1.45;box-shadow:0 6px 24px rgba(0,0,0,.18);max-width:260px;display:none}
+.tip b{font-family:var(--font-display);font-weight:600}
+.tip .kv{display:grid;grid-template-columns:auto auto;gap:1px 12px;margin-top:4px}
+.tip .kv span:nth-child(even){text-align:right}
+
+/* controls panel */
+.panel{display:grid;gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+.card h2{font-size:17px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.dist{display:flex;align-items:baseline;gap:10px;margin:2px 0 6px}
+.dist .big{font-family:var(--font-display);font-weight:800;font-size:48px;line-height:1;letter-spacing:0;color:var(--ink)}
+.dist .unit{color:var(--ink-2)}
+input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 6px}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button,.seg button{border:1px solid var(--line-2);background:transparent;border-radius:2px;padding:4px 11px;font-size:13px;cursor:pointer;color:var(--ink-2)}
+.presets button[aria-pressed=true],.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.seg button{border-radius:4px}
+.hint{font-size:12.5px;color:var(--ink-3);margin-top:8px;line-height:1.45}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:1100px) and (min-width:901px){.tiles{grid-template-columns:1fr}}
+@media (max-width:560px){.tiles{grid-template-columns:1fr}}
+.tile{padding:12px 14px;border:1px solid var(--line);border-top:3px solid var(--ink);border-radius:var(--radius);background:var(--panel)}
+.tile .v{font-family:var(--font-display);font-weight:800;font-size:32px;letter-spacing:0;line-height:1.05;font-variant-numeric:tabular-nums}
+.tile .l{font-size:12px;color:var(--ink-2);margin-top:2px}
+.tile .c{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.tile .c b{color:var(--ink-2);font-weight:500}
+.tile.worse{border-top-color:var(--alert);background:var(--alert-soft)}
+.tile.worse .v{color:var(--alert)}
+.tile.worse .c b{color:var(--alert);font-weight:700}
+.tile .c .ex{display:block;margin-top:2px}
+
+/* comparison */
+.section{max-width:1320px;margin:34px auto 0}
+.section>h2{font-size:28px;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
+.section>p.lede{color:var(--ink-2);max-width:70ch;margin:6px 0 0}
+.grp{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.grp h3{font-size:17px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:12px 18px;background:var(--ink);color:var(--paper);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.grp h3 small{font-weight:400;color:var(--accent-2);font-size:12px;font-family:var(--font-body);text-transform:none;letter-spacing:0}
+.cmp{width:100%;border-collapse:collapse}
+.cmp th{font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 18px;border-bottom:1px solid var(--line)}
+.cmp th.r,.cmp td.r{text-align:right}
+.cmp td{padding:9px 18px;border-bottom:1px solid var(--line);vertical-align:middle}
+.cmp tr:last-child td{border-bottom:none}
+.cmp td.metric{width:32%}
+.cmp td.metric small{display:block;color:var(--ink-3);font-size:11.5px}
+.cmp td.val{white-space:nowrap}
+.cmp td.val small{color:var(--ink-3);font-size:11px;margin-left:4px}
+.cmp td.bars{width:22%;min-width:110px}
+.cmp th.ex,.cmp td.ex{background:color-mix(in srgb,var(--city) 6%,transparent)}
+.cmp th.ex:first-of-type,.cmp td.ex:first-of-type{border-left:1px solid var(--line)}
+.bar{height:7px;border-radius:2px;margin:2px 0}
+.bar.co{background:var(--accent)}
+.bar.ci{background:var(--city)}
+.bar.ex{background:var(--exist)}
+.cmp th.sortable{cursor:pointer;user-select:none}
+.cmp th.sortable:hover{color:var(--ink)}
+.cmp th.sortable .arr{display:inline-block;width:1em;color:var(--accent)}
+.chip{display:inline-block;font-family:var(--font-mono);font-size:12px;padding:2px 7px;border-radius:3px;border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap}
+.chip.up{border-color:var(--alert);color:var(--alert);background:var(--alert-soft);font-weight:600}
+.chip.dn{border-color:var(--city);color:var(--city)}
+.key{display:flex;gap:16px;font-size:12.5px;color:var(--ink-2);margin-top:12px;flex-wrap:wrap}
+.key i{display:inline-block;width:18px;height:7px;border-radius:2px;vertical-align:middle;margin-right:6px}
+@media (max-width:700px){.cmp td.bars,.cmp th.bars{display:none}.cmp td,.cmp th{padding-inline:12px}.cmp td.metric{width:auto}}
+
+/* collapsible */
+.fold summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.fold summary::-webkit-details-marker{display:none}
+.fold summary h2{font-size:28px;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
+.fold summary .cnt{font-family:var(--font-body);font-weight:400;font-size:14px;color:var(--ink-3);margin-left:8px}
+.fold .chev{width:10px;height:10px;border-right:2px solid var(--ink-2);border-bottom:2px solid var(--ink-2);transform:rotate(45deg);transition:transform .2s;margin-right:6px;flex:none}
+.fold[open] .chev{transform:rotate(-135deg)}
+.fold summary:hover h2{color:var(--accent)}
+/* tract list */
+.tl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tl th{font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 14px;border-bottom:1px solid var(--line)}
+.tl td{padding:7px 14px;border-bottom:1px solid var(--line)}
+.tl th.r,.tl td.r{text-align:right}
+.tl tr:last-child td{border-bottom:none}
+.tl tr.part td:first-child::after{content:" partial";font-size:10.5px;color:var(--ink-3);margin-left:4px}
+.tl .w{display:inline-block;height:6px;background:var(--accent);border-radius:2px;vertical-align:middle;margin-right:6px}
+.tablewrap{overflow-x:auto}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actions button{border:1px solid var(--line-2);background:var(--panel);border-radius:4px;padding:7px 12px;cursor:pointer;font-size:13px}
+.actions button:hover{background:var(--paper-2)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:4px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+
+/* method */
+.method{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:18px}
+.method .card p{margin:0 0 10px;font-size:14px;color:var(--ink-2)}
+.method .card p:last-child{margin-bottom:0}
+.method .card h2{margin-bottom:8px}
+@media (prefers-reduced-motion:no-preference){.bar{transition:width .35s ease}}
+
+/* ---- Bridgeport Enviros design system: component overrides (test copy) ---- */
+body{padding-inline:0;padding-block:0 var(--be-s12,48px);font-size:16px;line-height:1.5}
+.work,.section{padding-inline:max(clamp(16px,3vw,40px),calc((100% - 1320px)/2));max-width:none;box-sizing:border-box}
+.work{margin-top:32px}
+.section{margin-top:48px}
+a{color:var(--be-forest)}
+header{max-width:none;margin:0;background:var(--be-mint);border-bottom:1px solid var(--be-rule);padding:32px max(clamp(16px,3vw,40px),calc((100% - 1320px)/2));grid-template-columns:auto 1fr;align-items:center;gap:16px 24px}
+header::before{display:none}
+header .cred{order:-1;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:8px}
+.belogo img{width:64px;height:64px;border-radius:2px;transition:none}
+.belogo:hover img,.belogo:focus-visible img{transform:none}
+header .vint{font-family:var(--font-body);font-weight:400;font-size:12px;letter-spacing:0;text-transform:none;color:var(--be-ink-2);text-align:left;line-height:16px}
+.eyebrow{font-family:var(--font-body);font-weight:700;font-size:13px;line-height:16px;letter-spacing:.08em;text-transform:uppercase;color:var(--be-ink-2)}
+header h1{font-family:var(--font-display);font-weight:800;font-size:clamp(30px,4.4vw,44px);line-height:1.1;letter-spacing:0;text-transform:none;color:var(--be-forest);margin-top:8px}
+header .sub{color:var(--be-ink-2);font-size:16px;line-height:24px}
+@media (max-width:760px){header{grid-template-columns:1fr}.belogo img{width:48px;height:48px}}
+.section>h2,.fold summary h2{font-family:var(--font-body);font-weight:700;font-size:22px;line-height:28px;letter-spacing:.02em;text-transform:uppercase;color:var(--be-forest);text-align:center}
+.fold summary{justify-content:center;position:relative}
+.fold summary .chev{position:absolute;right:6px}
+.section>p.lede{margin-inline:auto;text-align:left}
+.card{border-radius:var(--radius);padding:24px}
+.card h2{font-family:var(--font-body);font-size:18px;line-height:24px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--be-forest)}
+.dist .big{font-family:var(--font-display);font-weight:800;color:var(--be-forest)}
+input[type=range]{accent-color:var(--be-deep)}
+.presets button,.seg button{border:1px solid var(--be-ink-2);background:var(--be-mint);color:var(--be-ink);border-radius:var(--radius);font-weight:700;font-size:14px;line-height:20px;padding:6px 12px}
+.presets button[aria-pressed=true],.seg button[aria-pressed=true]{background:var(--be-deep);color:#fff;border-color:var(--be-deep)}
+.actions button{background:var(--be-deep);color:#fff;border:1px solid var(--be-deep);border-radius:var(--radius);font-size:15px;line-height:20px;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px}
+.actions button:hover{background:var(--be-deep);filter:brightness(1.15)}
+.mapwrap{border-radius:var(--radius-md)}
+.maptools button{border-radius:var(--radius);border-color:var(--be-rule);color:var(--be-forest)}
+.maptools button:hover{background:var(--be-mint)}
+.legend,.scalebar{border-radius:var(--radius);backdrop-filter:none;background:var(--panel)}
+.tip{box-shadow:none;border-radius:var(--radius)}
+.tile{border-top:3px solid var(--be-forest);border-radius:var(--radius)}
+.tile .v{font-family:var(--font-display);font-weight:800;font-size:36px;line-height:40px;color:var(--be-forest)}
+.tile .l{color:var(--be-ink-2)}
+.tile.worse{border-top-color:var(--be-milkweed);background:var(--be-worse-soft)}
+.tile.worse .v{color:var(--be-worse)}
+.chip.up::before{content:"\25B2 ";font-size:.8em}
+.grp{border-radius:var(--radius)}
+.grp h3{font-family:var(--font-body);background:var(--be-deep);color:#fff;letter-spacing:.02em}
+.grp h3 small{color:var(--be-meadow)}
+.cmp th,.tl th{font-family:var(--font-body);background:var(--be-mint);color:var(--be-ink-2);font-size:12px;font-weight:700;letter-spacing:.08em;border-bottom:2px solid var(--be-forest)}
+.cmp tbody tr:hover,.tl tbody tr:hover{background:var(--be-mint)}
+.cmp th.sortable:hover{color:var(--be-forest)}
+.num,.cmp .num,.tl .num{font-family:var(--font-body);font-variant-numeric:tabular-nums;font-weight:400}
+.bar.co{background:var(--be-milkweed)}
+.bar.ci{background:var(--be-ink-2)}
+.bar.ex{background:var(--be-existing)}
+.key i[style*="--accent"]{background:var(--be-milkweed)!important}
+.chip{border-radius:var(--radius);font-family:var(--font-body)}
+.chip.up{color:var(--be-worse);border-color:var(--be-milkweed);background:var(--be-worse-soft)}
+.fold summary:hover h2{color:var(--be-deep)}
+.toast{background:var(--be-deep);color:#fff}
+.method{padding:24px;background:var(--be-mint);border-radius:var(--radius-md)}
+.method .card p{color:var(--be-ink-2)}
+@media (prefers-reduced-motion:no-preference){.bar{transition:width .35s ease}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="eyebrow">Bridgeport · Armour Square · Chinatown &nbsp;—&nbsp; Chicago, Illinois</div>
+    <h1>Who lives next to the Canal Street Yard?</h1>
+    <p class="sub">Set a distance from the Union Pacific yard proposed as Amtrak's relocated maintenance facility. The tool selects every census tract within that distance, builds one demographic and health profile of the people living there, and sets it side by side with the people living the same distance from Amtrak's existing 14th Street maintenance yard, so the two locations can be compared like for like.</p>
+  </div>
+  <div class="cred">
+    <a class="belogo" href="https://www.bridgeportenviros.org/projects/amtrak-railyard" target="_blank" rel="noopener"
+       title="Bridgeport Environmentalists — Amtrak rail yard project"><img src="data:image/png;base64,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" alt="Bridgeport Environmentalists" width="72" height="72"></a>
+    <div class="vint" id="vintage"></div>
+  </div>
+</header>
+
+<div class="work">
+  <div class="mapwrap" id="mapwrap">
+    <svg id="map" role="img" aria-label="Map of the Canal Street Yard, the selected distance band, and census tracts"></svg>
+    <div class="maptools">
+      <button id="zin" title="Zoom in" aria-label="Zoom in">+</button>
+      <button id="zout" title="Zoom out" aria-label="Zoom out">−</button>
+      <button id="zfit" title="Fit to distance band" aria-label="Fit map to distance band">⌖</button>
+    </div>
+    <div class="legend">
+      <div class="row"><span class="sw" style="background:var(--site)"></span>UP Canal Street Yard (site)</div>
+      <div class="row"><span class="sw" style="background:var(--accent);opacity:.18"></span>Distance band</div>
+      <div class="row"><span class="sw" style="background:var(--accent);opacity:.3;border:1px solid var(--accent)"></span>Tract in cohort (darker = higher weight)</div>
+      <div class="row"><span class="sw" style="background:var(--yard-other);border:1px solid var(--line-2)"></span>Other rail yards</div>
+      <button type="button" class="row ltog" data-layer="school" aria-pressed="false" title="Show only schools"><svg width="22" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><g fill="none" stroke="var(--alert)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 5h6c1.4 0 2.5 1.1 2.5 2.5c0-1.4 1.1-2.5 2.5-2.5h6v12.5h-6c-1.4 0-2.5 1.1-2.5 2.5c0-1.4-1.1-2.5-2.5-2.5h-6z"/><path d="M12 7.5V20"/></g></svg>School (orange = inside the band)</button>
+      <button type="button" class="row ltog" data-layer="care" aria-pressed="false" title="Show only day cares and after-school centers"><svg width="22" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><path d="M3.5 12.5h8v8h-8z M12.5 12.5h8v8h-8z M8 4.5h8v8h-8z" fill="none" stroke="var(--alert)" stroke-width="2.4" stroke-linejoin="round"/></svg>Day care or after-school center</button>
+      <div class="lhint">Tap a symbol to show only that type</div>
+    </div>
+    <div class="scalebar" id="scalebar"><span id="scaletxt">1,000 ft</span><i id="scalebarline"></i></div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <h2>Distance from the proposed yard</h2>
+      <div class="dist"><span class="big num" id="distBig">1,000</span><span class="unit">feet <span id="distMi" class="num"></span></span></div>
+      <input type="range" id="dist" min="250" max="5280" step="10" value="1000" aria-label="Distance from the yard in feet">
+      <div class="presets" id="presets">
+        <button data-ft="500">500 ft</button><button data-ft="1000" aria-pressed="true">1,000 ft</button><button data-ft="1500">1,500 ft</button><button data-ft="2640">½ mile</button><button data-ft="5280">1 mile</button>
+      </div>
+      <h2 style="margin-top:18px">How a tract counts</h2>
+      <p class="hint" id="modeHint" style="margin-top:0"></p>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div class="card" id="summaryCard">
+      <h2>In one sentence</h2>
+      <p id="sentence" style="margin:0;color:var(--ink-2)"></p>
+      <div class="actions"><button id="copyBtn">Copy summary</button><button id="copyTable">Copy comparison table</button></div>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="sensitive">
+  <h2>Schools near the proposed yard</h2>
+  <p class="lede">Every district, charter, private and parochial school within a mile of <em>either</em> site, measured to Amtrak's proposed maintenance facility, with enrollment from each school's district or published figure. Both sites were searched the same way, so the two columns can be compared.</p>
+  <div class="tiles" style="margin-top:14px;max-width:560px;grid-template-columns:repeat(2,1fr)" id="sensTiles"></div>
+  <div class="grp" style="margin-top:16px"><div class="tablewrap"><table class="tl" id="sensTable"></table></div></div>
+</section>
+
+<section class="section" id="childcare">
+  <h2>Day cares and after-school centers near the proposed yard</h2>
+  <p class="lede">Child-care centers holding an active City of Chicago Children's Services Facility license, measured from each licensed address to Amtrak's proposed maintenance facility. Day cares serve infants, toddlers or preschoolers; after-school centers serve school-age children only. Home-based day cares and programs run inside schools are not included.</p>
+  <div class="tiles" style="margin-top:14px;max-width:560px;grid-template-columns:repeat(2,1fr)" id="ccTiles"></div>
+  <div class="grp" style="margin-top:16px"><div class="tablewrap"><table class="tl" id="ccTable"></table></div></div>
+</section>
+
+<section class="section" id="compare">
+  <h2>Community profile near the proposed yard</h2>
+  <p class="lede">Each row aggregates the tracts within the chosen distance of a site into a single figure (counts summed, rates recomputed from the summed numerators and denominators). The same distance and the same resident-weighting are applied to both yards, so the two sets of neighbors can be compared like for like. Margins of error are shown where the Census publishes them.</p>
+  <div class="key"><span><i style="background:var(--accent)"></i>Near proposed site (Canal Street Yard)</span><span><i style="background:var(--exist)"></i>Near existing site (14th Street yard)</span><span>× = proposed-site figure relative to the existing site</span></div>
+  <div id="groups"></div>
+</section>
+
+<section class="section" id="tracts">
+  <details class="fold" id="tractFold">
+    <summary><h2>Tracts in the cohort <span class="cnt" id="tractCount"></span></h2><span class="chev" aria-hidden="true"></span></summary>
+    <p class="lede">Distance is the shortest gap between the tract boundary and the proposed yard's boundary. Weight is the share of the tract's 2020 residents who live inside the distance band, which is how much of the tract counts toward the profile.</p>
+    <div class="grp" style="margin-top:16px"><div class="tablewrap"><table class="tl" id="tractTable"></table></div></div>
+  </details>
+</section>
+
+<section class="section" id="method">
+  <h2>Method, sources and caveats</h2>
+  <div class="method">
+    <div class="card"><h2>The site</h2>
+      <p>The footprint is the Union Pacific Canal Street Yard as mapped in OpenStreetMap (way 56246278), roughly <span id="yardAcres"></span> acres running along the South Branch of the Chicago River from about 16th Street to Pershing Road. Amtrak has not published a parcel-level plan; when it does, the buffer can be re-drawn from that footprint instead.</p>
+      <p>The existing-site columns use Amtrak's current maintenance yard south of Union Station (the Chicago Car Yard, OpenStreetMap way 880427556, about <span id="yardBAcres"></span> acres between Roosevelt Road and 18th Street along the river). The same distance and weighting are applied to it; it is not drawn on the map.</p>
+      <p>Distances are straight-line feet in a local planar projection centered on the yard. Buffers are measured from the yard boundary, not its center.</p></div>
+    <div class="card"><h2>How tracts are weighted</h2>
+      <p>Each census tract counts in proportion to the share of its 2020 Census population living in blocks whose center is inside the distance band. A tract with all of its residents inside the band counts in full; a tract with a tenth of its residents inside counts a tenth.</p>
+      <p>This resident-weighting was chosen over the simpler "any part of the tract touches the band" rule because it ignores rail land, river and industrial parcels where nobody lives, so it does not credit a site with residents who actually live half a mile further away. It is the standard approach in exposure studies when block-level population is available.</p></div>
+    <div class="card"><h2>Data</h2>
+      <p><b>American Community Survey</b> 5-year estimates, <span id="acsSpan"></span>, at the tract level, identical tables for both sites. Sentinel values for suppressed estimates are treated as missing. Medians cannot be summed, so median household income and median year built are shown as household-weighted averages of tract medians and labeled as such.</p>
+      <p><b>CDC PLACES</b>, 2025 release (BRFSS <span id="placesYears"></span>), model-based crude prevalence among adults 18+. These are small-area estimates, not surveys of these specific residents, and are aggregated here by adult population for each site.</p>
+      <p><b>Schools</b> are every district, charter, private and parochial school whose location falls within a mile of <b>either</b> site. Public and charter schools and their <b>enrollment</b> (<b>student_count_total</b>) come from Chicago Public Schools' School Profile Information for 2024–25; private and parochial schools come from the federal NCES private school location file, with enrollment from the NCES Private School Universe Survey or each school's published figure, so the two sets are not from the same school year. Earlier versions collected schools within a mile of the proposed site only, which undercounted the existing yard; this version searches an area around both sites, so the columns are comparable. Distances are measured to the yard boundary, from the building or grounds where a school is mapped as a polygon and from its address point otherwise. Enrollment counts students registered, not people present at a given hour, and excludes staff. Frances Xavier Warde is listed at its Des Plaines Street campus with the combined enrollment NCES reports for the school. Schools with no published enrollment are counted but add nothing to the student totals. St. Barbara Elementary (closed 2025) and one alternative high school reporting zero students are not included. Licensed day cares and pre-K classrooms inside schools are counted in the section below, not here.</p>
+      <p><b>Day cares and after-school centers</b> are businesses holding an active Children's Services Facility license in the City of Chicago's Business Licenses – Current Active dataset (September 2026), located by the city's geocoded license address. Licensed dance, gymnastics, martial-arts, art, cooking and fitness studios and stand-alone tutoring franchises were excluded; centers were classed as day care if they enroll children under school age and as after-school if they serve school-age children only, based on each center's state-licensed age range or its own description. Two licenses at adjoining storefronts of the same operator are shown once. Licensed family day-care homes, pre-K classrooms inside schools and park-district programs are not included, so the list is a floor. The same license rule and the same search area were applied around both sites. A handful of centers hold a state DCFS license without a current city license — among them two near the existing yard, The Nook and The Goddard School of South Loop — and are not shown on either side.</p>
+      <p><b>Geography</b> from Census TIGERweb (2020 tracts and blocks with 2020 counts). Basemap from OpenStreetMap contributors.</p></div>
+    <div class="card"><h2>Additional information</h2>
+      <p>EPA's EJScreen, the usual source for existing pollution burden and traffic proximity, was taken offline in 2025 and is not included. Health prevalence here describes the population's baseline vulnerability, not an effect of the yard.</p>
+      <p>ACS tract estimates carry wide margins of error, and the existing-site cohort is small, so its margins are especially wide; small differences between the two sites may not be meaningful. Where a figure's margin is large relative to the estimate, treat it as indicative.</p>
+      <p>Analysis and dashboard built by Matt Malec for Bridgeport Environmentalists.</p>
+      <p>This page uses Google Analytics to count visits.</p>
+      <p>Reporting on the proposal: <a href="https://blockclubchicago.org/2026/08/21/bridgeport-residents-furious-about-amtrak-rail-yard-plans-and-fear-losing-the-white-sox/">Block Club Chicago</a>, <a href="https://abc7chicago.com/post/chicago-residents-bridgeport-chinatown-push-back-proposed-amtrak-maintenance-facility-railroad-shares-new-details/19782593/">ABC7</a>, <a href="https://chicagocitywire.com/what-amtrak-has-told-bridgeport-about-the-canal-street-yard-and-what-it-hasn-t">Chicago City Wire</a>.</p></div>
+  </div>
+</section>
+
+<div class="tip" id="tip"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../data.js"></script>
+<script>
+(function(){
+const LAST_UPDATED = '2026-09-25';   // bump on every published version
+const D = window.RAILYARD_DATA;
+if(!D){ document.addEventListener('DOMContentLoaded',()=>{ const b=document.createElement('div'); b.style.cssText='margin:16px auto;max-width:1320px;padding:12px 16px;border:2px solid #c8102e;color:#c8102e;font-weight:600'; b.textContent='data.js failed to load. Upload data.js next to index.html.'; document.querySelector('.work').before(b); }); throw new Error('data.js missing'); }
+if(!D.tracts[0] || D.tracts[0].dist_b==null){ setTimeout(()=>{ const b=document.createElement('div'); b.style.cssText='margin:16px auto;max-width:1320px;padding:12px 16px;border:2px solid #c8102e;color:#c8102e;font-weight:600'; b.textContent='data.js is an older version without the 14th Street yard data. Upload the current data.js next to index.html.'; document.querySelector('.work').before(b); },0); }
+const $ = s => document.querySelector(s);
+const fmtInt = n => n==null||isNaN(n) ? '—' : Math.round(n).toLocaleString('en-US');
+const fmtPct = (n,d=1) => n==null||isNaN(n) ? '—' : n.toFixed(d) + '%';
+const fmtUSD = n => n==null||isNaN(n) ? '—' : '$' + Math.round(n).toLocaleString('en-US');
+const BIN = D.meta.bin_ft;
+const SCHOOLS_DATA=[["James Ward Elementary School", 469, 4838, 646, 2253, 502], ["Mark Sheridan Magnet School", 667, 4784, -853, 2384, 528], ["Minnie Miñoso Academy", 817, 9748, -847, -2632, 309], ["Saint Jerome School", 825, 5350, 1010, 1786, 132], ["Saint Therese Chinese Catholic School", 827, 2386, 972, 4827, 294], ["Air Force Academy High School", 840, 10593, 1124, -3482, 130], ["John C. Haines Elementary School", 867, 2730, 1019, 4477, 460], ["Healy Elementary School", 998, 6476, -929, 678, 1196], ["Santa Lucia School", 1117, 6599, 1325, 572, 80], ["Pui Tak Christian School", 1409, 2604, 1555, 4875, 116], ["Bridgeport Catholic Academy", 1478, 11100, -1431, -3923, 290], ["Hendricks Elementary School", 2156, 14921, 885, -7838, 221], ["National Teachers Academy", 2161, 2917, 2301, 5097, 802], ["John B. Drake Elementary School", 2226, 5455, 2407, 2100, 309], ["Perspectives Rodney D. Joslin High School", 2601, 2245, 2426, 6854, 315], ["Bronzeville Classical School", 2626, 13678, 2863, -6340, 455], ["Walsh Elementary School", 2843, 2937, -2700, 6325, 265], ["YCCS McKinley Lakeside Leadership HS", 3113, 6489, 3305, 1397, 87], ["Perspectives/IIT Math & Science Academy", 3168, 11046, 3452, -3474, 396], ["De La Salle Institute", 3293, 9689, 3553, -2005, 699], ["Ray Graham Training Center High School", 3324, 4225, 3477, 4462, 257], ["Armour Elementary School", 3338, 8807, -3360, -1017, 257], ["South Loop Elementary School", 3421, 1955, 2486, 8108, 851], ["City Garden Waldorf School", 3522, 3292, -3151, 7080, 61], ["Alexander Graham Elementary School", 3594, 15980, -1587, -8821, 351], ["Saint Gabriel School", 3652, 16281, -997, -9176, 184], ["Daystar Academy", 3656, 1979, 2559, 8360, 301], ["Ida B. Wells Elementary School", 4321, 11875, 4615, -3937, 299], ["Wendell Phillips Academy High School", 4514, 12615, 4808, -4659, 395], ["Holden Elementary School", 4587, 8230, -4514, 281, 412], ["Jungman Elementary School", 4659, 4263, -4115, 7700, 309], ["Old St. Mary's School", 4704, 2880, 3530, 8879, 505], ["Chicago Military Academy", 4782, 10845, 5052, -2607, 199], ["Pershing Elementary School", 4819, 9107, 5049, -609, 438], ["Cambridge Classical Academy", 4956, 17341, 2728, -10083, 38], ["Dunbar High School", 5075, 7982, 5275, 948, 329], ["Ludwig van Beethoven Elementary School", 5223, 17609, 2815, -10341, 338], ["University Village Montessori School", 5287, 2777, -2634, 10171, 58], ["John M. Smyth Elementary School", 6308, 4470, -4331, 10154, 340], ["British International School of Chicago, South Loop", 6472, 1183, 1358, 11980, 799], ["ITAV Leadership Academy — South Loop", 7042, 1037, 1027, 12610, null], ["St. Ignatius College Prep", 7061, 4508, -4463, 11046, 1492], ["South Loop Montessori School", 7184, 2230, 2284, 12479, 130], ["William Jones College Prep High School", 7767, 2708, 2669, 12966, 1933], ["Galileo Math & Science Scholastic Academy", 7985, 4221, -4309, 12306, 541], ["Frances Xavier Warde School", 10089, 3454, -1866, 15523, 857], ["Noble Muchin College Prep", 11248, 4972, 3032, 16493, 886], ["YCCS Innovations HS of Arts Integration", 11265, 4843, 2653, 16605, 340]];
+const CHILDCARE_DATA=[["Busy Bees Child Development Center", "d", 420, 7358, 642, -276], ["Bridgeport Child Development Center (One Hope United)", "d", 442, 6755, -363, 329], ["Busy Bees Learning School", "d", 488, 6874, 701, 213], ["Busy Bees Learning School III", "d", 495, 4301, -687, 2845], ["Busy Bees Learning School II", "d", 605, 4248, -799, 2923], ["Chinese American Service League Child Development Center", "d", 674, 956, 513, 6181], ["Magic Sprouts Academy", "d", 781, 4293, -976, 2920], ["Joyful Seeds Learning Center", "a", 872, 6938, -771, 187], ["Reach Higher Learning Center 2", "d", 893, 5040, -1075, 2174], ["Reach Higher Learning Center (Wells)", "a", 1001, 6574, 1208, 577], ["It Takes a Village at River City", "d", 7041, 1037, 1027, 12609], ["Busy Bees After School Tutoring Center", "a", 1163, 6913, -1081, 261], ["Blocks Infant Toddler Childcare Center", "d", 7528, 1228, 1098, 13091], ["Ivy Garden Learning Center (Chinatown)", "d", 1326, 3013, 1471, 4359], ["Busy Bees Child Development Center II", "d", 1406, 3053, 1551, 4354], ["Ivy Garden After School Center", "a", 1416, 6967, -1334, 256], ["Ivy Garden Learning Center (Bridgeport)", "a", 1936, 7104, -1856, 248], ["Living the Language (South Loop)", "d", 5432, 2164, 2787, 10365], ["South Loop KinderCare", "d", 4227, 2164, 2813, 8894], ["Ivy Garden Learning Center (Halsted)", "a", 2274, 6377, -2363, 1200], ["Rainforest Learning Center (South Loop)", "d", 5085, 2591, 3232, 9657], ["A Child's Space Early Literacy and Learning Center", "d", 6724, 2638, 3116, 11651], ["University Village Montessori School", "d", 5216, 2730, -2583, 10119], ["Chicago Kidz Klub", "d", 2768, 15304, 1682, -8162], ["Small World Daycare Center", "d", 2887, 7443, -2808, 231], ["Ivy Garden Early Learning Center (South Loop)", "d", 5006, 3040, 3695, 9142], ["Henry Booth House Near South Head Start", "d", 3183, 6599, 3377, 1310], ["The Goddard School of West Loop", "d", 9772, 3524, -2619, 15017], ["Stepping Stone Scholars", "d", 3559, 4630, 3708, 4106], ["Loop Learning Center", "d", 3721, 3593, 3741, 6537], ["Tess M. McKenzie Early Learning Campus", "d", 3757, 15131, 3530, -7683], ["Angels R Us Kidz Academy", "d", 4072, 13270, 4368, -5516], ["Brain Builders Academy", "d", 9963, 4184, -3561, 14902], ["Stepping Stones Nursery School", "d", 9584, 4420, -4195, 14209], ["Living the Language (Bronzeville)", "d", 4468, 8158, 4680, 283], ["Smart Learning Center", "a", 4715, 7216, -4892, 1894], ["Little Einsteins After-School Center", "a", 4776, 8464, -4693, 117], ["LSJ Afterschool Center III", "a", 5266, 7839, -5428, 1547]];   // [name, d=day care | a=after-school, ft to proposed, ft to existing, x, y]
+
+// ---------- metric definitions ----------
+const U18 = ['m_u5','m_5_9','m_10_14','m_15_17','f_u5','f_5_9','f_10_14','f_15_17'];
+const O65 = ['m_65_66','m_67_69','m_70_74','m_75_79','m_80_84','m_85p','f_65_66','f_67_69','f_70_74','f_75_79','f_80_84','f_85p'];
+const EDU_HS_PLUS = ['edu_hs','edu_ged','edu_somecoll1','edu_somecoll2','edu_assoc','edu_ba','edu_ma','edu_prof','edu_phd'];
+const GROUPS = [
+ {title:'Demographics', note:'ACS '+D.meta.acs_span, rows:[
+   {id:'pop', label:'Residents', kind:'count', num:['pop']},
+   {id:'hisp', label:'Hispanic or Latino', kind:'pct', num:['hispanic'], den:['re_total']},
+   {id:'asian', label:'Asian, not Hispanic', kind:'pct', num:['asian_nh'], den:['re_total']},
+   {id:'white', label:'White, not Hispanic', kind:'pct', num:['white_nh'], den:['re_total']},
+   {id:'black', label:'Black, not Hispanic', kind:'pct', num:['black_nh'], den:['re_total']},
+   {id:'other', label:'Other or two or more races, not Hispanic', kind:'pct', num:['re_total'], sub:['white_nh','black_nh','asian_nh','hispanic'], den:['re_total']},
+   {id:'u5', label:'Children under 5', kind:'pct', num:['m_u5','f_u5'], den:['age_total']},
+   {id:'u18', label:'Children under 18', kind:'pct', num:U18, den:['age_total']},
+   {id:'o65', label:'Adults 65 and over', kind:'pct', num:O65, den:['age_total']},
+   {id:'fb', label:'Foreign-born', kind:'pct', num:['foreign_born'], den:['nat_total']},
+   {id:'lep', label:'Limited-English-speaking households', kind:'pct', num:['lep_hh_spanish','lep_hh_indoeuro','lep_hh_asian','lep_hh_other'], den:['hh_lang_total'], sublabel:'share of households'},
+ ]},
+ {title:'Education, income, housing', note:'ACS '+D.meta.acs_span, rows:[
+   {id:'nohs', label:'Adults 25+ without a high school diploma', kind:'pct', num:['edu_total'], sub:EDU_HS_PLUS, den:['edu_total']},
+   {id:'ba', label:"Adults 25+ with a bachelor's degree or higher", kind:'pct', num:['edu_ba','edu_ma','edu_prof','edu_phd'], den:['edu_total']},
+   {id:'mhi', label:'Median household income', kind:'median', v:'med_hh_income', w:'occ_units', sublabel:'household-weighted average of tract medians', fmt:fmtUSD},
+   {id:'pci', label:'Per-capita income', kind:'percap', v:'per_capita_income', w:'pop', fmt:fmtUSD},
+   {id:'pov', label:'People below the poverty line', kind:'pct', num:['pov_below'], den:['pov_total']},
+   {id:'unemp', label:'Unemployment rate', kind:'pct', num:['unemployed'], den:['civ_labor_force'], sublabel:'civilian labor force 16+'},
+   {id:'unins', label:'People without health insurance', kind:'pct', num:['unins_u19','unins_19_34','unins_35_64','unins_65p'], den:['ins_total'], sublabel:'civilian noninstitutionalized population'},
+   {id:'rent', label:'Renter-occupied homes', kind:'pct', num:['renter_occ'], den:['occ_units']},
+   {id:'noveh', label:'Households without a vehicle', kind:'pct', num:['hh_no_vehicle'], den:['hh_total']},
+   {id:'kids', label:'Households with children', kind:'pct', num:['hh_with_kids'], den:['hh_kids_total']},
+ ]},
+ {title:'Health and vulnerability', note:'CDC PLACES 2025 release · adults 18+ · modeled crude prevalence', rows:[
+   {id:'CASTHMA', label:'Current asthma', kind:'places'},
+   {id:'COPD', label:'COPD', kind:'places', sublabel:'chronic obstructive pulmonary disease'},
+   {id:'CHD', label:'Coronary heart disease', kind:'places'},
+   {id:'BPHIGH', label:'High blood pressure', kind:'places'},
+   {id:'CANCER', label:'Cancer (excluding skin)', kind:'places'},
+   {id:'GHLTH', label:'Fair or poor general health', kind:'places'},
+   {id:'DISABILITY', label:'Any disability', kind:'places'},
+ ]},
+];
+
+// ---------- state ----------
+const state = {ft:1000, mode:'pop', sort:{col:'relEx', dir:-1}};
+const MODE_HINT = {
+  touch:'A tract joins the cohort when any part of its boundary is within the set distance, and then counts in full.',
+  area:'Each tract counts in proportion to the share of its land area inside the distance band.',
+  pop:'Each census tract counts in proportion to the share of its 2020 Census residents whose block lies inside the distance band, so rail land, river and industrial parcels where nobody lives do not inflate the count. The same rule is applied to both yards.'
+};
+
+function weightOf(t, site){
+  const ft = state.ft; const b = site==='b';
+  const dist = b ? t.dist_b : t.dist, areaCdf = b ? t.area_cdf_b : t.area_cdf, popCdf = b ? t.pop_cdf_b : t.pop_cdf;
+  if (dist==null || !popCdf) return 0;
+  if (state.mode==='touch') return dist <= ft ? 1 : 0;
+  const idx = Math.floor(ft/BIN) - 1; // cdf[i] = within (i+1)*BIN
+  if (state.mode==='area'){ if(!t.area_n) return 0; return idx<0 ? (dist===0 ? areaCdf[0]/t.area_n : 0) : Math.min(1,(areaCdf[Math.min(idx,areaCdf.length-1)]||0)/t.area_n); }
+  if (!t.pop2020) return 0;
+  return idx<0 ? (popCdf[0]/t.pop2020) : Math.min(1,(popCdf[Math.min(idx,popCdf.length-1)]||0)/t.pop2020);
+}
+
+// ---------- aggregation ----------
+function sumVars(rows, keys){ // rows: [{acs, w}]
+  let e=0, m2=0, any=false;
+  for (const r of rows){ if(!r.acs) continue; for(const k of keys){ const v=r.acs[k]; if(!v||v[0]==null) continue; any=true; e+=r.w*v[0]; m2+=(r.w*(v[1]||0))**2; } }
+  return any ? {e, m:Math.sqrt(m2)} : null;
+}
+function computeRow(def, rows, placesRows){
+  if (def.kind==='count'){ const s=sumVars(rows, def.num); return s && {v:s.e, moe:s.m}; }
+  if (def.kind==='pct'){
+    const n=sumVars(rows, def.num); const d=sumVars(rows, def.den); if(!n||!d||!d.e) return null;
+    let ne=n.e, nm2=n.m**2;
+    if (def.sub){ const s=sumVars(rows, def.sub); if(s){ ne-=s.e; nm2+=s.m**2; } }
+    const p=ne/d.e; let inner=nm2 - p*p*d.m*d.m; const moe = Math.sqrt(inner>0?inner:nm2+p*p*d.m*d.m)/d.e;
+    return {v:p*100, moe:moe*100, num:ne, den:d.e};
+  }
+  if (def.kind==='median' || def.kind==='percap'){
+    let num=0, den=0; for(const r of rows){ if(!r.acs) continue; const v=r.acs[def.v], w=r.acs[def.w]; if(!v||v[0]==null||!w||w[0]==null) continue; num+=r.w*v[0]*w[0]; den+=r.w*w[0]; }
+    return den? {v:num/den} : null;
+  }
+  if (def.kind==='places'){
+    let num=0, den=0, lo=0, hi=0; for(const r of placesRows){ const p=r.places&&r.places[def.id]; if(!p||!r.pop18) continue; num+=r.w*p[0]*r.pop18; lo+=r.w*p[1]*r.pop18; hi+=r.w*p[2]*r.pop18; den+=r.w*r.pop18; }
+    return den? {v:num/den, lo:lo/den, hi:hi/den} : null;
+  }
+}
+const CITY_ROWS=[{acs:D.chicago.acs, w:1}];
+function cityRow(def){
+  if (def.kind==='places'){ const p=D.chicago.places[def.id]; return p? {v:p[0], lo:p[1], hi:p[2]} : null; }
+  return computeRow(def, CITY_ROWS, []);
+}
+
+function aggregate(){
+  const rows=[], rowsB=[];
+  for(const t of D.tracts){ const w=weightOf(t,'a'); if(w>0) rows.push({t, w, acs:t.acs, places:t.places, pop18:t.pop18}); const wb=weightOf(t,'b'); if(wb>0) rowsB.push({t, w:wb, acs:t.acs, places:t.places, pop18:t.pop18}); }
+  rows.sort((a,b)=>a.t.dist-b.t.dist || b.w-a.w); rowsB.sort((a,b)=>a.t.dist_b-b.t.dist_b || b.w-a.w);
+  const results={}; for(const g of GROUPS) for(const r of g.rows) results[r.id]={co:computeRow(r, rows, rows), ci:cityRow(r), ex:computeRow(r, rowsB, rowsB), def:r};
+  return {rows, rowsB, results};
+}
+
+// ---------- rendering: panel ----------
+function renderTiles(agg){
+  const R=agg.results;
+  const pop=R.pop.co, u18=R.u18.co, o65=R.o65.co;
+  const diff=(a,b)=>{ if(a==null||b==null) return '—'; const d=Math.round(a-b); return d===0?'same as the existing site':`<b>${d>0?'▲':'▼'} ${fmtInt(Math.abs(d))} ${d>0?'more':'fewer'}</b> than the existing site`; };
+  const worse=(a,b)=> (a!=null&&b!=null&&Math.round(a-b)>0) ? ' worse' : '';
+  const exPop=R.pop.ex&&R.pop.ex.v, exU18=R.u18.ex&&R.u18.ex.num, exO65=R.o65.ex&&R.o65.ex.num;
+  $('#tiles').innerHTML = `
+   <div class="tile${worse(pop&&pop.v, exPop)}"><div class="v num">${fmtInt(pop&&pop.v)}</div><div class="l">residents near the proposed site</div><div class="c">${diff(pop&&pop.v, exPop)}<span class="ex">existing site: ${fmtInt(exPop)}</span></div></div>
+   <div class="tile${worse(u18&&u18.num, exU18)}"><div class="v num">${fmtInt(u18&&u18.num)}</div><div class="l">children under 18</div><div class="c">${diff(u18&&u18.num, exU18)}<span class="ex">existing site: ${fmtInt(exU18)}</span></div></div>
+   <div class="tile${worse(o65&&o65.num, exO65)}"><div class="v num">${fmtInt(o65&&o65.num)}</div><div class="l">adults 65 and over</div><div class="c">${diff(o65&&o65.num, exO65)}<span class="ex">existing site: ${fmtInt(exO65)}</span></div></div>`;
+}
+function ratioTxt(co,ci){ if(!co||!ci||!ci.v) return null; return co.v/ci.v; }
+function sentence(agg){
+  const R=agg.results; const pop=R.pop.co; if(!pop||!agg.rows.length){ return 'No tract lies within this distance of the yard.'; }
+  const dist = state.ft===0 ? 'directly bordering' : `within ${fmtInt(state.ft)} feet of`;
+  const parts=[];
+  const exPop=R.pop.ex&&R.pop.ex.v;
+  const pick=(id,label)=>{ const r=ratioTxt(R[id].co,R[id].ex); if(r!=null && (r>=1.25||r<=0.8)) parts.push(`${label} ${r>=1?(r.toFixed(1)+'× the rate near the existing site'):(Math.round((1-r)*100)+'% below the rate near the existing site')} (${fmtPct(R[id].co.v)} vs ${fmtPct(R[id].ex.v)})`); };
+  pick('u18','children under 18 at'); pick('o65','seniors at'); pick('nohs','adults without a high school diploma at'); pick('lep','limited-English households at'); pick('pov','poverty at'); pick('CASTHMA','adult asthma at'); pick('noveh','car-free households at');
+  const cmp = exPop!=null ? (exPop>0 ? `, ${(pop.v/exPop).toFixed(1)} times the ${fmtInt(exPop)} who live the same distance from Amtrak's existing 14th Street yard` : ', where nobody lives within the same distance of the existing 14th Street yard') : '';
+  const lead=`About ${fmtInt(pop.v)} people live ${dist} the Canal Street Yard${cmp}`;
+  return parts.length ? `${lead}; ${parts.slice(0,3).join('; ')}.` : `${lead}. The two neighborhoods look similar on most measures.`;
+}
+function th(col,label,cls){ const on=state.sort.col===col; return `<th class="sortable ${cls}" data-col="${col}" aria-sort="${on?(state.sort.dir>0?'ascending':'descending'):'none'}" title="Sort by ${label}">${label} <span class="arr">${on?(state.sort.dir>0?'▲':'▼'):''}</span></th>`; }
+function renderCompare(agg){
+  const R=agg.results; let html='';
+  for(const g of GROUPS){
+    html+=`<div class="grp"><h3>${g.title}<small>${g.note}</small></h3><div class="tablewrap"><table class="cmp"><thead><tr>${th('measure','Measure','')}${th('co','Near proposed site','r')}${th('ex','Near existing site','r')}${th('relEx','Proposed relative to existing','r')}<th class="bars"></th></tr></thead><tbody>`;
+    const {col,dir}=state.sort;
+    const val=def=>{ const x=R[def.id]; let v;
+      if(col==='measure') return def.label.toLowerCase();
+      if(col==='co') v=x.co&&x.co.v; else if(col==='ex') v=x.ex&&x.ex.v;
+      else if(col==='relEx') v=def.noratio?null:ratioTxt(x.co,x.ex);
+      return (v==null||isNaN(v))? null : v; };
+    const ordered=g.rows.slice().sort((a,b)=>{
+      if(a.kind==='count'!==(b.kind==='count')) return a.kind==='count'?-1:1;   // Residents stays pinned
+      const va=val(a), vb=val(b);
+      if(va==null&&vb==null) return 0; if(va==null) return 1; if(vb==null) return -1;
+      if(typeof va==='string') return dir*va.localeCompare(vb);
+      return dir*(va-vb);
+    });
+    for(const def of ordered){
+      const {co,ci,ex}=R[def.id];
+      const f = def.fmt || (def.kind==='count'?fmtInt:fmtPct);
+      const exTxt = ex? f(ex.v) : '—';
+      const exMoe = ex && ex.moe!=null ? `<small>±${def.kind==='count'?fmtInt(ex.moe):ex.moe.toFixed(1)}</small>` : (ex && ex.lo!=null ? `<small>${ex.lo.toFixed(1)}–${ex.hi.toFixed(1)}</small>`:'');
+      let exChip='';
+      if(def.kind==='count'){ if(co&&ex&&ex.v) exChip=`<span class="chip">${(co.v/ex.v).toFixed(2)}×</span>`; }
+      else if(!def.noratio){ const r=ratioTxt(co,ex); if(r!=null){ const cls = r>=1.15?'up':(r<=0.87?'dn':''); exChip=`<span class="chip ${cls}">${r.toFixed(2)}×</span>`; } }
+      else if(co&&ex){ const dlt=Math.round(co.v-ex.v); exChip=`<span class="chip">${dlt>0?'+':''}${dlt} yrs</span>`; }
+      const coTxt = co? f(co.v) : '—';
+      const coMoe = co && co.moe!=null ? `<small>±${def.kind==='count'?fmtInt(co.moe):co.moe.toFixed(1)}</small>` : (co && co.lo!=null ? `<small>${co.lo.toFixed(1)}–${co.hi.toFixed(1)}</small>`:'');
+      let bars='';
+      if(!def.nobar && (co||ex)){ const mx=Math.max(co?co.v:0,ex?ex.v:0)*1.08||1; const bar=(cls,r,t)=>r?`<div class="bar ${cls}" style="width:${Math.max(1,r.v/mx*100).toFixed(1)}%" title="${t}"></div>`:`<div class="bar" style="width:0"></div>`; bars=bar('co',co,'Proposed site '+coTxt)+bar('ex',ex,'Existing site '+exTxt); }
+      html+=`<tr><td class="metric">${def.label}${def.sublabel?`<small>${def.sublabel}</small>`:''}</td><td class="val r num">${coTxt}${coMoe}</td><td class="val r num">${exTxt}${exMoe}</td><td class="r">${exChip}</td><td class="bars">${bars}</td></tr>`;
+    }
+    html+='</tbody></table></div></div>';
+  }
+  $('#groups').innerHTML=html;
+  $('#groups').querySelectorAll('th.sortable').forEach(h=>h.addEventListener('click',()=>{ const c=h.dataset.col; if(state.sort.col===c) state.sort.dir*=-1; else state.sort={col:c, dir:(c==='measure'?1:-1)}; renderCompare(lastAgg); }));
+}
+function renderSensitive(){
+  const ft=state.ft; const SCHOOLS=SCHOOLS_DATA;
+  const schoolsA=SCHOOLS.filter(s=>s[1]<=ft).length, schoolsB=SCHOOLS.filter(s=>s[2]<=ft).length;
+  const worse=(a,b)=>a>b?' worse':'';
+  const diff=(a,b)=>{ const d=a-b; return d===0?'same as the existing site':`<b>${d>0?'▲':'▼'} ${fmtInt(Math.abs(d))} ${d>0?'more':'fewer'}</b> than the existing site`; };
+  const studentsA=SCHOOLS.filter(s=>s[1]<=ft).reduce((t,s)=>t+(s[5]||0),0), studentsB=SCHOOLS.filter(s=>s[2]<=ft).reduce((t,s)=>t+(s[5]||0),0);
+  $('#sensTiles').innerHTML=`<div class="tile${worse(studentsA,studentsB)}"><div class="v num">${fmtInt(studentsA)}</div><div class="l">students enrolled within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(studentsA,studentsB)}<span class="ex">existing site: ${fmtInt(studentsB)}</span></div></div>
+   <div class="tile${worse(schoolsA,schoolsB)}"><div class="v num">${schoolsA}</div><div class="l">schools within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(schoolsA,schoolsB)}<span class="ex">existing site: ${schoolsB}</span></div></div>`;
+  const list=SCHOOLS.filter(s=>s[1]<=Math.max(ft,2640)).sort((a,b)=>a[1]-b[1]);
+  let html='<thead><tr><th>School</th><th class="r">Students enrolled</th><th class="r">Distance to proposed yard</th></tr></thead><tbody>';
+  for(const s of list){ const fa=s[1]<=ft; const em=fa?'color:var(--alert);font-weight:600':''; html+=`<tr><td>${s[0]}</td><td class="r num" style="${em}">${s[5]==null?'not published':fmtInt(s[5])}</td><td class="r num" style="${em}">${fmtInt(s[1])} ft${fa?' ●':''}</td></tr>`; }
+  $('#sensTable').innerHTML=html+'</tbody>';
+}
+function renderTracts(agg){
+  let html='<thead><tr><th>Tract</th><th class="r">Distance to yard</th><th class="r">Share of residents in band</th><th class="r">Residents (ACS)</th><th class="r">2020 Census</th><th class="r">Median HH income</th><th class="r">No HS diploma</th><th class="r">Adult asthma</th></tr></thead><tbody>';
+  for(const r of agg.rows){
+    const t=r.t, a=t.acs||{};
+    const edu = a.edu_total&&a.edu_total[0] ? (1 - EDU_HS_PLUS.reduce((s,k)=>s+(a[k]&&a[k][0]||0),0)/a.edu_total[0])*100 : null;
+    const asth = t.places&&t.places.CASTHMA ? t.places.CASTHMA[0] : null;
+    html+=`<tr class="${r.w<0.999?'part':''}" data-geoid="${t.geoid}"><td>${t.name.replace('Census ','')}</td><td class="r num">${t.dist===0?'adjoins':fmtInt(t.dist)+' ft'}</td><td class="r num"><span class="w" style="width:${Math.round(r.w*40)}px"></span>${Math.round(r.w*100)}%</td><td class="r num">${fmtInt(a.pop&&a.pop[0])}</td><td class="r num">${fmtInt(t.pop2020)}</td><td class="r num">${fmtUSD(a.med_hh_income&&a.med_hh_income[0])}</td><td class="r num">${fmtPct(edu)}</td><td class="r num">${fmtPct(asth)}</td></tr>`;
+  }
+  if(!agg.rows.length) html+='<tr><td colspan="8" style="color:var(--ink-3)">No tracts within this distance.</td></tr>';
+  $('#tractTable').innerHTML=html+'</tbody>';
+  $('#tractCount').textContent=agg.rows.length?`(${agg.rows.length}) — click to expand`:'';
+}
+
+// ---------- map ----------
+const svgNS='http://www.w3.org/2000/svg';
+const svg=$('#map');
+const el=(n,attrs,parent)=>{const e=document.createElementNS(svgNS,n); for(const k in attrs) e.setAttribute(k,attrs[k]); (parent||svg).appendChild(e); return e;};
+const path=(coords)=>coords.map((p,i)=>(i?'L':'M')+p[0]+' '+(-p[1])).join('');
+const ringPath=(rings)=>rings.map(r=>path(r)+'Z').join('');
+const view={x:-6000,y:-11000,w:12000,h:22000};
+const gBase=el('g',{id:'base'}), gTractFill=el('g',{}), gRoads=el('g',{'pointer-events':'none'}), gBuffer=el('g',{opacity:.16,'pointer-events':'none'}), gSite=el('g',{'pointer-events':'none'}), gTractLine=el('g',{fill:'none','pointer-events':'none'}), gLabels=el('g',{'font-family':'Barlow, sans-serif','pointer-events':'none'});
+// defs: hatch for the site
+const defs=el('defs',{});
+const pat=el('pattern',{id:'hatch',width:'60',height:'60',patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);
+el('rect',{width:60,height:60,fill:'var(--site)','fill-opacity':.55},pat); el('line',{x1:0,y1:0,x2:0,y2:60,stroke:'var(--paper-2)','stroke-width':14},pat);
+const patY=el('pattern',{id:'hatchY',width:'80',height:'80',patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);
+el('rect',{width:80,height:80,fill:'var(--yard-other)'},patY); el('line',{x1:0,y1:0,x2:0,y2:80,stroke:'var(--line-2)','stroke-width':6,opacity:.6},patY);
+
+const B=D.basemap;
+for(const f of B.parks) el('path',{d:path(f.c)+'Z',fill:'var(--park)',stroke:'none'},gBase);
+for(const f of B.industrial) el('path',{d:path(f.c)+'Z',fill:'var(--paper)',stroke:'none',opacity:.6},gBase);
+for(const f of B.yards) if(f.id!==56246278) el('path',{d:path(f.c)+'Z',fill:'url(#hatchY)',stroke:'var(--line-2)','stroke-width':1,'vector-effect':'non-scaling-stroke'},gBase);
+for(const f of B.water){ if(f.poly) el('path',{d:path(f.c)+'Z',fill:'var(--water)',stroke:'none'},gBase); else el('path',{d:path(f.c),fill:'none',stroke:'var(--water)','stroke-width':3,'vector-effect':'non-scaling-stroke'},gBase); }
+for(const f of B.pois) el('path',{d:path(f.c)+'Z',fill:'var(--paper-2)',stroke:'var(--line-2)','stroke-width':.6,'vector-effect':'non-scaling-stroke',opacity:.9},gBase);
+// roads: casing then fill
+const roadW={minor:[2.2,1.2],major:[4.5,2.8],hwy:[7,4.5]};
+for(const k of ['minor','major','hwy']){ const g1=el('g',{fill:'none',stroke:'var(--road-edge)','stroke-width':roadW[k][0],'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round'},gRoads); for(const f of B.roads) if(f.k===k) el('path',{d:path(f.c),'vector-effect':'non-scaling-stroke'},g1); }
+for(const k of ['minor','major','hwy']){ const g2=el('g',{fill:'none',stroke:k==='minor'?'var(--road)':'var(--major)','stroke-width':roadW[k][1],'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round'},gRoads); for(const f of B.roads) if(f.k===k) el('path',{d:path(f.c),'vector-effect':'non-scaling-stroke'},g2); }
+const gRail=el('g',{fill:'none',stroke:'var(--rail)','stroke-width':1.1,'vector-effect':'non-scaling-stroke',opacity:.75},gRoads);
+for(const f of B.rails) el('path',{d:path(f.c),'vector-effect':'non-scaling-stroke','stroke-dasharray':f.k==='rail'?'':'6 4'},gRail);
+// buffer + site
+const bufferPath=el('path',{d:ringPath([D.yard]),fill:'var(--accent)',stroke:'var(--accent)','stroke-linejoin':'round','stroke-linecap':'round','stroke-width':0},gBuffer);
+el('path',{d:ringPath([D.yard]),fill:'url(#hatch)',stroke:'var(--site)','stroke-width':1.6,'vector-effect':'non-scaling-stroke'},gSite);
+// tracts
+const tractEls={};
+for(const t of D.tracts){
+  if(!t.polys) continue;
+  const d=t.polys.map(poly=>ringPath(poly)).join('');
+  const fill=el('path',{d,fill:'var(--accent)','fill-opacity':0,'data-geoid':t.geoid},gTractFill);
+  const line=el('path',{d,stroke:'var(--ink-3)','stroke-width':.7,'vector-effect':'non-scaling-stroke','stroke-opacity':.55},gTractLine);
+  tractEls[t.geoid]={fill,line};
+  fill.addEventListener('pointerenter',e=>showTip(t,e)); fill.addEventListener('pointermove',e=>moveTip(e)); fill.addEventListener('pointerleave',hideTip);
+}
+// labels: major roads (one per name, longest), water names, parks named
+const byName={};
+for(const f of B.roads) if(f.n && f.k!=='minor'){ const len=segLen(f.c); if(!byName[f.n]||byName[f.n].len<len) byName[f.n]={len,f}; }
+function segLen(c){let L=0;for(let i=1;i<c.length;i++)L+=Math.hypot(c[i][0]-c[i-1][0],c[i][1]-c[i-1][1]);return L;}
+function midInfo(c){ const half=segLen(c)/2; let acc=0; for(let i=1;i<c.length;i++){ const d=Math.hypot(c[i][0]-c[i-1][0],c[i][1]-c[i-1][1]); if(acc+d>=half){ const t=(half-acc)/d; const x=c[i-1][0]+t*(c[i][0]-c[i-1][0]), y=c[i-1][1]+t*(c[i][1]-c[i-1][1]); let ang=Math.atan2(-(c[i][1]-c[i-1][1]),c[i][0]-c[i-1][0])*180/Math.PI; if(ang>90||ang<-90) ang+=180; return {x,y,ang}; } acc+=d; } return null; }
+Object.values(byName).sort((a,b)=>b.len-a.len).slice(0,20).forEach(({f})=>{ const m=midInfo(f.c); if(!m) return; const t=el('text',{x:m.x,y:-m.y,'data-px':10.5,'font-size':95,fill:'var(--ink-2)','text-anchor':'middle',transform:`rotate(${m.ang.toFixed(1)} ${m.x} ${-m.y})`,dy:'-0.35em','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22,'stroke-linejoin':'round'},gLabels); t.textContent=f.n; });
+for(const f of B.parks) if(f.n && f.k==='stadium' && /Rate Field/i.test(f.n)){ const c=centroid(f.c); const t=el('text',{x:c[0],y:-c[1],'data-px':12,'font-size':105,'font-weight':600,fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':22},gLabels); t.textContent=f.n; }
+const siteC=centroid(D.yard); { const t=el('text',{x:siteC[0]+260,y:-siteC[1],'data-px':13,'font-size':115,'font-weight':600,'font-family':'Montserrat, Arial, sans-serif',fill:'var(--ink)','paint-order':'stroke',stroke:'var(--paper-2)','stroke-width':26},gLabels); t.textContent='UP Canal Street Yard'; }
+function renderChildcare(){
+  const ft=state.ft, C=CHILDCARE_DATA;
+  const worse=(a,b)=>a>b?' worse':'';
+  const diff=(a,b)=>{ const d=a-b; return d===0?'same as the existing site':`<b>${d>0?'▲':'▼'} ${fmtInt(Math.abs(d))} ${d>0?'more':'fewer'}</b> than the existing site`; };
+  const n=(t,k)=>C.filter(c=>c[1]===t&&c[k]<=ft).length;
+  const dA=n('d',2), dB=n('d',3), aA=n('a',2), aB=n('a',3);
+  $('#ccTiles').innerHTML=`<div class="tile${worse(dA,dB)}"><div class="v num">${dA}</div><div class="l">day-care centers within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(dA,dB)}<span class="ex">existing site: ${dB}</span></div></div>
+   <div class="tile${worse(aA,aB)}"><div class="v num">${aA}</div><div class="l">after-school centers within ${fmtInt(ft)} ft of the proposed site</div><div class="c">${diff(aA,aB)}<span class="ex">existing site: ${aB}</span></div></div>`;
+  const list=C.filter(c=>c[2]<=Math.max(ft,2640)).sort((a,b)=>a[2]-b[2]);
+  let html='<thead><tr><th>Center</th><th class="r">Type</th><th class="r">Distance to proposed yard</th></tr></thead><tbody>';
+  for(const c of list){ const fa=c[2]<=ft; const em=fa?'color:var(--alert);font-weight:600':''; html+=`<tr><td>${c[0]}</td><td class="r" style="white-space:nowrap;${em}">${CC_TYPE[c[1]]}</td><td class="r num" style="${em}">${fmtInt(c[2])} ft${fa?' ●':''}</td></tr>`; }
+  $('#ccTable').innerHTML=html+'</tbody>';
+}
+const CC_TYPE={d:'Day care',a:'After-school'};
+const tractLabelG=el('g',{},gLabels);
+// ---------- school markers (open-book glyph) ----------
+const BOOK='M3.5 5h6c1.4 0 2.5 1.1 2.5 2.5c0-1.4 1.1-2.5 2.5-2.5h6v12.5h-6c-1.4 0-2.5 1.1-2.5 2.5c0-1.4-1.1-2.5-2.5-2.5h-6z';
+const BOOK_SPINE='M12 7.5V20';
+const gSchools=el('g',{},gLabels.parentNode);
+gLabels.parentNode.insertBefore(gSchools, gLabels);
+const MAP_MAX_FT=5280;   // markers are drawn only within a mile of the proposed yard; the tables keep every school
+const schoolEls=SCHOOLS_DATA.filter(sc=>sc[1]<=MAP_MAX_FT).map(sc=>{
+  const g=el('g',{class:'school','data-name':sc[0],style:'cursor:default'},gSchools);
+  el('circle',{cx:0,cy:0,r:9,fill:'transparent'},g);              // hit target
+  const glyph=el('g',{'stroke-width':2,fill:'none','stroke-linejoin':'round','stroke-linecap':'round','transform':'translate(-12,-12.5)'},g);
+  el('path',{d:BOOK,stroke:'var(--paper-2)','stroke-width':5.5},glyph);   // halo for contrast
+  el('path',{d:BOOK_SPINE,stroke:'var(--paper-2)','stroke-width':5.5},glyph);
+  const p1=el('path',{d:BOOK},glyph), p2=el('path',{d:BOOK_SPINE},glyph);
+  g.addEventListener('pointerenter',e=>showSchoolTip(sc,e));
+  g.addEventListener('pointermove',moveTip);
+  g.addEventListener('pointerleave',hideTip);
+  return {g,p1,p2,sc};
+});
+// ---------- day care / after-school markers (toy-blocks glyph) ----------
+const BLOCKS='M3.5 12.5h8v8h-8z M12.5 12.5h8v8h-8z M8 4.5h8v8h-8z';
+const gCare=el('g',{},gLabels.parentNode);
+gLabels.parentNode.insertBefore(gCare, gSchools);
+const careEls=CHILDCARE_DATA.filter(c=>c[2]<=MAP_MAX_FT).map(c=>{
+  const g=el('g',{class:'care','data-name':c[0],style:'cursor:default'},gCare);
+  el('circle',{cx:0,cy:0,r:9,fill:'transparent'},g);
+  const glyph=el('g',{fill:'none','stroke-linejoin':'round','transform':'translate(-12,-12.5)'},g);
+  el('path',{d:BLOCKS,stroke:'var(--paper-2)','stroke-width':5.5},glyph);
+  const p=el('path',{d:BLOCKS,'stroke-width':2},glyph);
+  g.addEventListener('pointerenter',e=>showCareTip(c,e));
+  g.addEventListener('pointermove',moveTip);
+  g.addEventListener('pointerleave',hideTip);
+  return {g,p,c};
+});
+function scaleSchools(){ const s=ftPerPx(); const k=s*1.12;     // glyph ≈ 20 px tall on screen at any zoom
+  for(const {g,sc} of schoolEls) g.setAttribute('transform',`translate(${sc[3]},${-sc[4]}) scale(${k.toFixed(3)})`);
+  const kc=s*0.95;
+  for(const {g,c} of careEls) g.setAttribute('transform',`translate(${c[4]},${-c[5]}) scale(${kc.toFixed(3)})`);
+}
+// ---------- legend filter (click a symbol type to isolate it) ----------
+let markerFocus=null;   // null | 'school' | 'care'
+const legendEl=document.querySelector('.legend');
+function applyMarkerFocus(){
+  gSchools.style.display = markerFocus==='care' ? 'none' : '';
+  gCare.style.display    = markerFocus==='school' ? 'none' : '';
+  legendEl.querySelectorAll('.ltog').forEach(b=>b.setAttribute('aria-pressed', b.dataset.layer===markerFocus));
+  if(markerFocus) legendEl.dataset.focus=markerFocus; else delete legendEl.dataset.focus;
+  hideTip();
+}
+legendEl.querySelectorAll('.ltog').forEach(b=>b.addEventListener('click',()=>{ markerFocus = markerFocus===b.dataset.layer ? null : b.dataset.layer; applyMarkerFocus(); }));
+function renderSchools(){
+  for(const {g,p1,p2,sc} of schoolEls){
+    const inBand = sc[1] <= state.ft;
+    const col = inBand ? 'var(--alert)' : 'var(--ink-3)';
+    p1.setAttribute('stroke',col); p2.setAttribute('stroke',col);
+    g.setAttribute('opacity', inBand ? 1 : .55);
+  }
+  for(const {g,p,c} of careEls){
+    const inBand = c[2] <= state.ft;
+    p.setAttribute('stroke', inBand ? 'var(--alert)' : 'var(--ink-3)');
+    g.setAttribute('opacity', inBand ? 1 : .55);
+  }
+  scaleSchools();
+}
+function centroid(c){ let a=0,x=0,y=0; for(let i=0;i<c.length;i++){ const j=(i+1)%c.length; const f=c[i][0]*c[j][1]-c[j][0]*c[i][1]; a+=f; x+=(c[i][0]+c[j][0])*f; y+=(c[i][1]+c[j][1])*f; } a*=.5; if(Math.abs(a)<1) return c[0]; return [x/(6*a),y/(6*a)]; }
+
+function applyView(){ svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`); updateScale(); scaleLabels(); if(typeof scaleSchools==='function') scaleSchools(); }
+function ftPerPx(){ const r=svg.getBoundingClientRect(); return Math.max(view.w/r.width, view.h/r.height); }
+function scaleLabels(){ const s=ftPerPx(); gLabels.querySelectorAll('text[data-px]').forEach(t=>{ const px=+t.dataset.px; t.setAttribute('font-size',(px*s).toFixed(0)); t.setAttribute('stroke-width',(px*s*0.22).toFixed(0)); }); }
+function updateScale(){ const r=svg.getBoundingClientRect(); const ftPerPx=Math.max(view.w/r.width, view.h/r.height); const target=140; let ft=[100,250,500,1000,2640,5280].reduce((b,v)=>Math.abs(v/ftPerPx-target)<Math.abs(b/ftPerPx-target)?v:b,500); $('#scaletxt').textContent = ft===5280?'1 mile':ft===2640?'½ mile':fmtInt(ft)+' ft'; $('#scalebarline').style.width=(ft/ftPerPx)+'px'; }
+function fitBand(animate){
+  const xs=D.yard.map(p=>p[0]), ys=D.yard.map(p=>p[1]); const pad=Math.max(state.ft,300)+900;
+  const bx=[Math.min(...xs)-pad, Math.max(...xs)+pad], by=[Math.min(...ys)-pad, Math.max(...ys)+pad];
+  const r=svg.getBoundingClientRect(); const asp=r.width/r.height; let w=bx[1]-bx[0], h=by[1]-by[0];
+  if(w/h<asp) w=h*asp; else h=w/asp;
+  const cx=(bx[0]+bx[1])/2, cy=-(by[0]+by[1])/2;
+  view.x=cx-w/2; view.y=cy-h/2; view.w=w; view.h=h; applyView();
+}
+function zoom(f, cx, cy){ const r=svg.getBoundingClientRect(); const px=cx==null?.5:(cx-r.left)/r.width, py=cy==null?.5:(cy-r.top)/r.height; const nw=Math.min(40000,Math.max(800,view.w*f)), nh=view.h*(nw/view.w); view.x+= (view.w-nw)*px; view.y+=(view.h-nh)*py; view.w=nw; view.h=nh; applyView(); }
+$('#zin').onclick=()=>zoom(1/1.4); $('#zout').onclick=()=>zoom(1.4); $('#zfit').onclick=()=>fitBand();
+svg.addEventListener('wheel',e=>{e.preventDefault(); zoom(e.deltaY>0?1.25:1/1.25,e.clientX,e.clientY);},{passive:false});
+let drag=null;
+svg.addEventListener('pointerdown',e=>{ drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y}; svg.setPointerCapture(e.pointerId); svg.classList.add('dragging'); });
+svg.addEventListener('pointermove',e=>{ if(!drag) return; const r=svg.getBoundingClientRect(); const s=Math.max(view.w/r.width,view.h/r.height); view.x=drag.vx-(e.clientX-drag.x)*s; view.y=drag.vy-(e.clientY-drag.y)*s; applyView(); });
+const endDrag=()=>{drag=null; svg.classList.remove('dragging');};
+svg.addEventListener('pointerup',endDrag); svg.addEventListener('pointercancel',endDrag);
+window.addEventListener('resize',()=>{applyView();});
+
+function renderMap(agg){
+  bufferPath.setAttribute('stroke-width', state.ft*2);
+  const inCohort=new Map(agg.rows.map(r=>[r.t.geoid,r.w]));
+  for(const t of D.tracts){ const e=tractEls[t.geoid]; if(!e) continue; const w=inCohort.get(t.geoid)||0; e.fill.setAttribute('fill-opacity', w? (0.06+0.22*w).toFixed(2):0); e.line.setAttribute('stroke', w?'var(--accent)':'var(--ink-3)'); e.line.setAttribute('stroke-width', w?1.4:.7); e.line.setAttribute('stroke-opacity', w?.95:.5); }
+  tractLabelG.innerHTML='';   // tract numbers stay off the map; hover a tract for its details
+  scaleLabels();
+}
+// tooltip
+const tip=$('#tip');
+function showTip(t,e){ const w=weightOf(t,'a'); const a=t.acs||{}; const edu = a.edu_total&&a.edu_total[0] ? (1 - EDU_HS_PLUS.reduce((s,k)=>s+(a[k]&&a[k][0]||0),0)/a.edu_total[0])*100 : null;
+  tip.innerHTML=`<b>${t.name}</b><div class="kv"><span>Distance to yard</span><span class="num">${t.dist===0?'adjoins':fmtInt(t.dist)+' ft'}</span><span>Weight in cohort</span><span class="num">${w?Math.round(w*100)+'%':'not included'}</span><span>Residents (ACS)</span><span class="num">${fmtInt(a.pop&&a.pop[0])}</span><span>Median HH income</span><span class="num">${fmtUSD(a.med_hh_income&&a.med_hh_income[0])}</span><span>No HS diploma</span><span class="num">${fmtPct(edu)}</span><span>Adult asthma</span><span class="num">${fmtPct(t.places&&t.places.CASTHMA&&t.places.CASTHMA[0])}</span></div>`; tip.style.display='block'; moveTip(e); }
+function moveTip(e){ const x=e.clientX+14, y=e.clientY+14; tip.style.left=Math.min(x, window.innerWidth-280)+'px'; tip.style.top=Math.min(y, window.innerHeight-160)+'px'; }
+function hideTip(){ tip.style.display='none'; }
+function showCareTip(c,e){
+  tip.innerHTML=`<b>${c[0]}</b><div class="kv"><span>Type</span><span>${CC_TYPE[c[1]]}</span><span>Distance to proposed yard</span><span class="num">${fmtInt(c[2])} ft</span></div>`;
+  tip.style.display='block'; moveTip(e); }
+function showSchoolTip(sc,e){
+  tip.innerHTML=`<b>${sc[0]}</b><div class="kv"><span>Students enrolled</span><span class="num">${sc[5]==null?'not published':fmtInt(sc[5])}</span><span>Distance to proposed yard</span><span class="num">${fmtInt(sc[1])} ft</span></div>`;
+  tip.style.display='block'; moveTip(e); }
+
+// ---------- copy ----------
+let lastAgg=null;
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),1800); }
+async function copy(text){ try{ await navigator.clipboard.writeText(text); toast('Copied'); }catch(err){ toast('Copy blocked by the browser'); } }
+$('#copyBtn').onclick=()=>copy($('#sentence').textContent+`\n\nMethod: ${MODE_HINT[state.mode]} Sources: ACS ${D.meta.acs_span}; CDC PLACES 2025; TIGER 2020.`);
+$('#copyTable').onclick=()=>{ if(!lastAgg) return; const lines=[`Measure\tNear proposed Canal Street Yard (${fmtInt(state.ft)} ft, resident-weighted)\tNear existing 14th Street yard`]; for(const g of GROUPS) for(const def of g.rows){ const {co,ex}=lastAgg.results[def.id]; const f=def.fmt||(def.kind==='count'?fmtInt:fmtPct); lines.push(`${def.label}\t${co?f(co.v):'—'}\t${ex?f(ex.v):'—'}`); } copy(lines.join('\n')); };
+
+// ---------- controls ----------
+function setFt(ft, fromSlider){ const v=fromSlider?Math.round(ft/10)*10:ft; state.ft=Math.max(250,Math.min(5280,v)); if(!fromSlider) $('#dist').value=state.ft; document.querySelectorAll('#presets button').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.ft===state.ft)); update(); }
+$('#dist').addEventListener('input',e=>setFt(+e.target.value,true));
+$('#presets').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ setFt(+b.dataset.ft); fitBand(); } });
+let fitTimer=null;
+function showError(msg){ let b=document.getElementById('errBanner'); if(!b){ b=document.createElement('div'); b.id='errBanner'; b.style.cssText='margin:16px auto;max-width:1320px;padding:12px 16px;border:2px solid var(--alert);color:var(--alert);background:var(--alert-soft);font-weight:600;border-radius:3px'; document.querySelector('.work').before(b); } b.textContent=msg; }
+function update(){
+  try { updateInner(); } catch(e){ console.error(e); showError('The dashboard could not render: '+(e&&e.message?e.message:e)+'. If this page was updated recently, make sure data.js was uploaded alongside index.html.'); }
+}
+function updateInner(){
+  $('#distBig').textContent=fmtInt(state.ft); $('#distMi').textContent=state.ft?`(${(state.ft/5280).toFixed(2)} mi)`:'';
+  $('#modeHint').textContent=MODE_HINT[state.mode];
+  const agg=aggregate(); lastAgg=agg;
+  renderTiles(agg); $('#sentence').textContent=sentence(agg); renderCompare(agg); renderSensitive(); renderChildcare(); renderSchools(); renderTracts(agg); renderMap(agg);
+}
+$('#vintage').innerHTML=`Built by Bridgeport Environmentalists<br>Last updated ${LAST_UPDATED}`;
+$('#yardAcres').textContent=D.meta.yard_acres; $('#yardBAcres').textContent=D.meta.yard_b_acres; $('#acsSpan').textContent=D.meta.acs_span; $('#placesYears').textContent=D.meta.places_years.join('–');
+update(); fitBand();
+$('#dist').addEventListener('change',()=>fitBand());
+})();
+</script>
+</body>
+</html>
