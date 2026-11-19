@@ -19,14 +19,14 @@
 <style>
 :root{
   color-scheme:light;
-  /* Bridgeport Enviros design system, tokens v3 (light only), mapped onto this page's variable names */
+  /* Bridgeport Enviros design system, tokens v3 (light only), mapped onto this page's variable names. Red (#c8102e, the page's original alert red) stays the color for negative metrics and the proposed site, at Matt's request */
   --be-bg:#ffffff; --be-mint:#f3ffeb; --be-meadow:#ccf6a8; --be-ink:#212121; --be-ink-2:#55634d; --be-forest:#274e13; --be-deep:#1b370d;
-  --be-rule:#c9d3c3; --be-worse:#a34700; --be-worse-soft:#fff1e3; --be-milkweed:#e47200; --be-existing:#6f7f66;
+  --be-rule:#c9d3c3; --be-worse:#c8102e; --be-worse-soft:#fdeaed; --be-bad:#c8102e; --be-existing:#6f7f66;
   --paper:var(--be-bg); --paper-2:var(--be-mint); --panel:#ffffff; --line:var(--be-rule); --line-2:#a9b8a0;
   --ink:var(--be-ink); --ink-2:var(--be-ink-2); --ink-3:#66745e;
   --accent:var(--be-forest); --accent-2:var(--be-meadow); --accent-soft:rgba(39,78,19,.10);
   --city:var(--be-ink-2); --city-soft:#dfe8d8; --exist:var(--be-existing);
-  --water:#cfdde3; --park:#e3f3d6; --road:#ffffff; --road-edge:#d5dccf; --major:#f4f7f1; --rail:#5f6368; --yard-other:#e4e9df; --site:var(--be-milkweed);
+  --water:#cfdde3; --park:#e3f3d6; --road:#ffffff; --road-edge:#d5dccf; --major:#f4f7f1; --rail:#5f6368; --yard-other:#e4e9df; --site:var(--be-bad);
   --alert:var(--be-worse); --alert-soft:var(--be-worse-soft);
   --focus:var(--be-deep);
   --radius:4px; --radius-md:8px;
@@ -211,7 +211,7 @@ input[type=range]{accent-color:var(--be-deep)}
 .tile{border-top:3px solid var(--be-forest);border-radius:var(--radius)}
 .tile .v{font-family:var(--font-display);font-weight:800;font-size:36px;line-height:40px;color:var(--be-forest)}
 .tile .l{color:var(--be-ink-2)}
-.tile.worse{border-top-color:var(--be-milkweed);background:var(--be-worse-soft)}
+.tile.worse{border-top-color:var(--be-bad);background:var(--be-worse-soft)}
 .tile.worse .v{color:var(--be-worse)}
 .chip.up::before{content:"\25B2 ";font-size:.8em}
 .grp{border-radius:var(--radius)}
@@ -221,12 +221,12 @@ input[type=range]{accent-color:var(--be-deep)}
 .cmp tbody tr:hover,.tl tbody tr:hover{background:var(--be-mint)}
 .cmp th.sortable:hover{color:var(--be-forest)}
 .num,.cmp .num,.tl .num{font-family:var(--font-body);font-variant-numeric:tabular-nums;font-weight:400}
-.bar.co{background:var(--be-milkweed)}
+.bar.co{background:var(--be-bad)}
 .bar.ci{background:var(--be-ink-2)}
 .bar.ex{background:var(--be-existing)}
-.key i[style*="--accent"]{background:var(--be-milkweed)!important}
+.key i[style*="--accent"]{background:var(--be-bad)!important}
 .chip{border-radius:var(--radius);font-family:var(--font-body)}
-.chip.up{color:var(--be-worse);border-color:var(--be-milkweed);background:var(--be-worse-soft)}
+.chip.up{color:var(--be-worse);border-color:var(--be-bad);background:var(--be-worse-soft)}
 .fold summary:hover h2{color:var(--be-deep)}
 .toast{background:var(--be-deep);color:#fff}
 .method{padding:24px;background:var(--be-mint);border-radius:var(--radius-md)}
@@ -261,7 +261,7 @@ input[type=range]{accent-color:var(--be-deep)}
       <div class="row"><span class="sw" style="background:var(--accent);opacity:.18"></span>Distance band</div>
       <div class="row"><span class="sw" style="background:var(--accent);opacity:.3;border:1px solid var(--accent)"></span>Tract in cohort (darker = higher weight)</div>
       <div class="row"><span class="sw" style="background:var(--yard-other);border:1px solid var(--line-2)"></span>Other rail yards</div>
-      <button type="button" class="row ltog" data-layer="school" aria-pressed="false" title="Show only schools"><svg width="22" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><g fill="none" stroke="var(--alert)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 5h6c1.4 0 2.5 1.1 2.5 2.5c0-1.4 1.1-2.5 2.5-2.5h6v12.5h-6c-1.4 0-2.5 1.1-2.5 2.5c0-1.4-1.1-2.5-2.5-2.5h-6z"/><path d="M12 7.5V20"/></g></svg>School (orange = inside the band)</button>
+      <button type="button" class="row ltog" data-layer="school" aria-pressed="false" title="Show only schools"><svg width="22" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><g fill="none" stroke="var(--alert)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 5h6c1.4 0 2.5 1.1 2.5 2.5c0-1.4 1.1-2.5 2.5-2.5h6v12.5h-6c-1.4 0-2.5 1.1-2.5 2.5c0-1.4-1.1-2.5-2.5-2.5h-6z"/><path d="M12 7.5V20"/></g></svg>School (red = inside the band)</button>
       <button type="button" class="row ltog" data-layer="care" aria-pressed="false" title="Show only day cares and after-school centers"><svg width="22" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><path d="M3.5 12.5h8v8h-8z M12.5 12.5h8v8h-8z M8 4.5h8v8h-8z" fill="none" stroke="var(--alert)" stroke-width="2.4" stroke-linejoin="round"/></svg>Day care or after-school center</button>
       <div class="lhint">Tap a symbol to show only that type</div>
     </div>
